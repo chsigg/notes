@@ -94,9 +94,9 @@ class SessionConfig {
       SessionConfig(
         id: '1',
         title: 'Treble Names',
-        icon: SessionIcons.violinIcon,
+        icon: SessionIcons.trebleIcon,
         type: SessionType.names,
-        notes: NoteMapping.getAllViolinNotes(),
+        notes: NoteMapping.getAllTrebleNotes(),
         names: NoteMapping.getAllNames(),
       ),
       SessionConfig(
