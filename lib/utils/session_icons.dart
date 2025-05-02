@@ -4,13 +4,13 @@ import 'package:flutter/material.dart';
 class SessionIcons {
   SessionIcons._();
 
-  static const IconData trebleIcon = IconData(
+  static const trebleIcon = IconData(
     0x026,
-    fontFamily: 'StaffClefPitches',
+    fontFamily: 'StaffClefPitchesForIcons',
   );
-  static const IconData bassIcon = IconData(
+  static const bassIcon = IconData(
     0x03F,
-    fontFamily: 'StaffClefPitches',
+    fontFamily: 'StaffClefPitchesForIcons',
   );
 
   static const allIcons = [
