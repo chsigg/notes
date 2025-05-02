@@ -224,7 +224,9 @@ class NoteMapping {
   }
 
   static int getNumSemitonesFromA(String name) {
-    switch (_noteToNameMap.entries.firstWhere((entry) => entry.value == name).key) {
+    switch (_noteToNameMap.entries
+        .firstWhere((entry) => entry.value == name)
+        .key) {
       case 'A':
         return 0;
       case 'A#':

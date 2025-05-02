@@ -27,8 +27,8 @@ class PracticePlayPage extends StatefulWidget {
 class _PracticePlayPageState extends State<PracticePlayPage> {
   TimerWidget? _timerWidget;
   double? _aPitch;
-  bool? _correctAnswer;
-  Timer? _answerTimer;
+  Timer _answerTimer = Timer(Duration.zero, () {});
+  Widget? _statusWidget;
   String? _errorMessage;
 
   StreamSubscription<double>? _pitchSubscription;
@@ -51,7 +51,7 @@ class _PracticePlayPageState extends State<PracticePlayPage> {
 
   @override
   void dispose() {
-    _answerTimer?.cancel();
+    _answerTimer.cancel();
     _pitchSubscription?.cancel();
     _audioRecorder.dispose();
     super.dispose();
@@ -89,7 +89,7 @@ class _PracticePlayPageState extends State<PracticePlayPage> {
             return chunks;
           })
           .exhaustMap((chunk) {
-            if (_correctAnswer != null) {
+            if (_answerTimer.isActive) {
               return Stream.empty();
             }
             detectPitch(chunk) async {
@@ -99,6 +99,7 @@ class _PracticePlayPageState extends State<PracticePlayPage> {
               );
               return pitchDetector.getPitchFromIntBuffer(chunk);
             }
+
             return Stream.fromFuture(compute(detectPitch, chunk));
           })
           .expand((result) {
@@ -144,7 +145,7 @@ class _PracticePlayPageState extends State<PracticePlayPage> {
     }
     final question = _questionQueue.removeFirst();
     setState(() {
-      _correctAnswer = null;
+      _statusWidget = null;
       _currentQuestion = question;
       if (_aPitch != null && widget.config.timeLimitSeconds > 0) {
         _timerWidget = TimerWidget(
@@ -170,31 +171,58 @@ class _PracticePlayPageState extends State<PracticePlayPage> {
   }
 
   void _handlePitch(double pitch) {
-    if (_correctAnswer != null) {
+    if (_answerTimer.isActive) {
       return;
     }
-    _aPitch ??= pitch;
-    final semitonesFromA = log(pitch / _aPitch!) * (12 / ln2) % 12;
-    final correctResult = NoteMapping.getNumSemitonesFromA(_currentQuestion);
-    final isCorrect = (semitonesFromA - correctResult).abs() < 0.5;
+    final targetPitch = _aPitch ?? 440.0;
+    final playedTone = 12 / ln2 * log(pitch / targetPitch);
+    final targetTone = NoteMapping.getNumSemitonesFromA(_currentQuestion);
+    var semitonesOffset = playedTone % 12 - targetTone;
+    if (semitonesOffset > 6) {
+      semitonesOffset -= 12;
+    }
+    final isTuning = _aPitch == null;
+    final isCorrect = semitonesOffset.abs() < (isTuning ? 2 : 0.5);
+    if (isCorrect) {
+      _aPitch ??= pitch;
+    }
     Provider.of<SessionConfigProvider>(
       context,
       listen: false,
     ).incrementSessionStats(widget.config.id, isCorrect);
-    setState(() => _correctAnswer = isCorrect);
+    final statusWidget = () {
+      if (isTuning) {
+        var tune = exp(ln2 / 12 * semitonesOffset) * targetPitch;
+        return SizedBox(
+          height: 32,
+          child: Text(
+            '${tune.toStringAsFixed(0)} Hz',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 24,
+              color: isCorrect ? null : Colors.red[400],
+            ),
+          ),
+        );
+      }
+      return Icon(
+        isCorrect
+            ? Icons.check
+            : semitonesOffset < 0
+            ? Icons.north
+            : Icons.south,
+        color: isCorrect ? Colors.green[400] : Colors.red[400],
+        size: 32,
+      );
+    }();
+    setState(() => _statusWidget = statusWidget);
     _answerTimer = Timer(Duration(seconds: 1), () {
-      isCorrect ? _goToNextQuestion() : setState(() => _correctAnswer = null);
+      if (isCorrect) _goToNextQuestion();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final questionColor =
-        _correctAnswer == null
-            ? null
-            : _correctAnswer!
-            ? Colors.green[400]
-            : Colors.red[400];
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.config.title),
@@ -209,12 +237,18 @@ class _PracticePlayPageState extends State<PracticePlayPage> {
             Text(
               _currentQuestion,
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 72, color: questionColor),
+              style: TextStyle(fontSize: 72),
             ),
+            const SizedBox(height: 32),
+            _statusWidget ?? SizedBox(height: 32),
             const SizedBox(height: 32),
             // --- Error Message ---
             if (_errorMessage != null) ...[
-              Text(_errorMessage!, style: TextStyle(color: Colors.red[900])),
+              Text(
+                _errorMessage!,
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.red[900]),
+              ),
               const SizedBox(height: 32),
             ],
           ],
