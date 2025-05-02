@@ -115,7 +115,7 @@ class _HomePageState extends State<HomePage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Musical Note Practice'),
+        title: const Text("Helma's Note Trainer"),
         centerTitle: true,
         actions: [
           IconButton(

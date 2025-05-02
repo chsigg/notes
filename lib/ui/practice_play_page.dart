@@ -9,6 +9,7 @@ import 'package:pitch_detector_dart/pitch_detector.dart';
 import 'package:provider/provider.dart';
 import 'package:record/record.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../models/session_config.dart';
 import '../providers/session_config_provider.dart';
@@ -24,7 +25,8 @@ class PracticePlayPage extends StatefulWidget {
   State<PracticePlayPage> createState() => _PracticePlayPageState();
 }
 
-class _PracticePlayPageState extends State<PracticePlayPage> {
+class _PracticePlayPageState extends State<PracticePlayPage>
+    with WidgetsBindingObserver {
   TimerWidget? _timerWidget;
   double? _aPitch;
   Timer _answerTimer = Timer(Duration.zero, () {});
@@ -45,19 +47,27 @@ class _PracticePlayPageState extends State<PracticePlayPage> {
   @override
   void initState() {
     super.initState();
-    _setupAudioPipeline();
+    WidgetsBinding.instance.addObserver(this);
+    WakelockPlus.enable();
+    _startAudioRecording();
     _addQuestions();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    _handleAppLifecycleState(state);
   }
 
   @override
   void dispose() {
     _answerTimer.cancel();
-    _pitchSubscription?.cancel();
-    _audioRecorder.dispose();
+    _stopAudioRecording().then((_) => _audioRecorder.dispose());
+    WakelockPlus.disable();
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
-  Future<void> _setupAudioPipeline() async {
+  Future<void> _startAudioRecording() async {
     try {
       if (!await _audioRecorder.hasPermission()) {
         throw Exception('Microphone permission denied.');
@@ -128,6 +138,23 @@ class _PracticePlayPageState extends State<PracticePlayPage> {
       );
     } catch (error) {
       setState(() => _errorMessage = error.toString());
+    }
+  }
+
+  Future<void> _stopAudioRecording() async {
+    await _pitchSubscription?.cancel();
+    _pitchSubscription = null;
+    return _audioRecorder.cancel();
+  }
+
+  Future<void> _handleAppLifecycleState(AppLifecycleState state) async {
+    switch (state) {
+      case AppLifecycleState.paused:
+        return _stopAudioRecording();
+      case AppLifecycleState.resumed:
+        return _startAudioRecording();
+      default:
+        return Future.value();
     }
   }
 
