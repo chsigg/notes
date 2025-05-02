@@ -62,7 +62,7 @@ class _PracticeNotesPageState extends State<PracticeNotesPage> {
     // number of leading elements in random order.
     final allNotes = _shuffled(NoteMapping.getAllNotes());
     final selectedNotes = _shuffled([...widget.config.notes]);
-    final isCorrectNote = (note) => NoteMapping.getNoteName(note) == question;
+    isCorrectNote(note) => NoteMapping.getNoteName(note) == question;
     final choices = <String>{
       selectedNotes.firstWhere(
         isCorrectNote,
@@ -72,7 +72,7 @@ class _PracticeNotesPageState extends State<PracticeNotesPage> {
     final preferredNotes = <String>{
       ...NoteMapping.getSameAccidentalNotes(choices.first),
     };
-    final isPreferredNote = (note) => preferredNotes.contains(note);
+    isPreferredNote(note) => preferredNotes.contains(note);
     choices.addAll(selectedNotes.where(isPreferredNote));
     choices.addAll(selectedNotes);
     if (choices.length < widget.config.numChoices) {

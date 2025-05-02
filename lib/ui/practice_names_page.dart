@@ -66,7 +66,7 @@ class _PracticeNamesPageState extends State<PracticeNamesPage> {
     final preferredNames = <String>{
       ...preferredNotes.map(NoteMapping.getNoteName),
     };
-    final isPreferredName = (name) => preferredNames.contains(name);
+    isPreferredName(name) => preferredNames.contains(name);
     choices.addAll(selectedNames.where(isPreferredName));
     choices.addAll(selectedNames);
     if (choices.length < widget.config.numChoices) {

@@ -98,7 +98,7 @@ class _SessionEditorPageState extends State<SessionEditorPage> {
 
   Widget _buildIconPickerDialog(BuildContext context, IconData currentIcon) {
     final List<Widget> iconWidgets =
-        SessionIcons.all_icons.map((iconData) {
+        SessionIcons.allIcons.map((iconData) {
           return InkWell(
             onTap: () {
               Navigator.of(context).pop(iconData);
@@ -193,7 +193,7 @@ class _SessionEditorPageState extends State<SessionEditorPage> {
               .sublist(index - row)
               .take(row % 12 == 11 ? 6 : 7);
           final item = rowElements.first;
-          final text = '    ' + NoteMapping.getNoteStaff(item)[0] + '+';
+          final text = '    ${NoteMapping.getNoteStaff(item)[0]}+';
           final isSelected = _selectedNotes.containsAll(rowElements);
           return _buildItem(text, style, () {
             if (isSelected) {
@@ -208,7 +208,7 @@ class _SessionEditorPageState extends State<SessionEditorPage> {
         if (item.isEmpty) {
           return const SizedBox();
         }
-        final text = '+' + NoteMapping.getNoteStaff(item)[2] + '+';
+        final text = '+${NoteMapping.getNoteStaff(item)[2]}+';
         final isSelected = _selectedNotes.contains(item);
         return _buildItem(text, style, () {
           if (isSelected) {

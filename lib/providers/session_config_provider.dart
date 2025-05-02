@@ -20,10 +20,9 @@ class SessionConfigProvider with ChangeNotifier {
     try {
       final loadedConfigs = await loadSessionsFromPrefs();
       if (loadedConfigs.isEmpty) {
-        _configs = SessionConfig.getDefaultConfigs();
-      } else {
-        _configs = loadedConfigs;
+        throw Exception('Loaded configs are empty');
       }
+      _configs = loadedConfigs;
     } catch (e) {
       _configs = SessionConfig.getDefaultConfigs();
     }

@@ -4,18 +4,18 @@ import 'package:flutter/material.dart';
 class SessionIcons {
   SessionIcons._();
 
-  static const IconData violin_icon = IconData(
+  static const IconData violinIcon = IconData(
     0x026,
     fontFamily: 'StaffClefPitches',
   );
-  static const IconData bass_icon = IconData(
+  static const IconData bassIcon = IconData(
     0x03F,
     fontFamily: 'StaffClefPitches',
   );
 
-  static const all_icons = [
-    violin_icon,
-    bass_icon,
+  static const allIcons = [
+    violinIcon,
+    bassIcon,
     Icons.music_note,
     Icons.piano,
     Icons.change_history,

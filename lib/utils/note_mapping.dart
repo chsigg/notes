@@ -224,8 +224,7 @@ class NoteMapping {
   }
 
   static int getNumSemitonesFromA(String name) {
-    final test = (entry) => entry.value == name;
-    switch (_noteToNameMap.entries.firstWhere(test).key) {
+    switch (_noteToNameMap.entries.firstWhere((entry) => entry.value == name).key) {
       case 'A':
         return 0;
       case 'A#':
@@ -270,7 +269,7 @@ class NoteMapping {
 
   static Iterable<String> getSameAccidentalNotes(String note) {
     if (note.length < 3) throw Exception('Invalid note: $note');
-    final getAccidental = (note) => note.substring(2, note.length - 1);
+    getAccidental(note) => note.substring(2, note.length - 1);
     return _noteToStaffMap.keys.where(
       (key) => getAccidental(key) == getAccidental(note),
     );

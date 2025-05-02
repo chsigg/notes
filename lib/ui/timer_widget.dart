@@ -6,7 +6,7 @@ class TimerWidget extends StatefulWidget {
   final int timeSeconds;
   final VoidCallback onTimerEnd;
 
-  TimerWidget({super.key, required this.timeSeconds, required this.onTimerEnd});
+  const TimerWidget({super.key, required this.timeSeconds, required this.onTimerEnd});
 
   @override
   State<TimerWidget> createState() => _TimerWidgetState();

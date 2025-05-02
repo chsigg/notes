@@ -71,7 +71,7 @@ class SessionConfig {
   }
 
   static IconData _iconFromJsonManual(Map<String, dynamic> json) {
-    return SessionIcons.all_icons.firstWhere(
+    return SessionIcons.allIcons.firstWhere(
       (icon) =>
           icon.codePoint == json['codePoint'] &&
           icon.fontFamily == json['fontFamily'] &&
@@ -93,27 +93,35 @@ class SessionConfig {
     return [
       SessionConfig(
         id: '1',
-        title: 'Violin Notes',
-        icon: SessionIcons.violin_icon,
+        title: 'Treble Names',
+        icon: SessionIcons.violinIcon,
         type: SessionType.names,
         notes: NoteMapping.getAllViolinNotes(),
         names: NoteMapping.getAllNames(),
       ),
       SessionConfig(
         id: '2',
-        title: 'Base Notes',
-        icon: SessionIcons.bass_icon,
+        title: 'Bass Names',
+        icon: SessionIcons.bassIcon,
         type: SessionType.names,
         notes: NoteMapping.getAllBaseNotes(),
         names: NoteMapping.getAllNames(),
       ),
       SessionConfig(
         id: '3',
-        title: 'Note Names',
+        title: 'All Notes',
         icon: Icons.music_note,
         type: SessionType.notes,
         notes: NoteMapping.getAllNotes(),
         names: NoteMapping.getAllNames(),
+      ),
+      SessionConfig(
+        id: '4',
+        title: 'Play',
+        icon: Icons.mic,
+        type: SessionType.play,
+        notes: [],
+        names: [...NoteMapping.getAllNames().take(7)],
       ),
     ];
   }

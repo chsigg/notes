@@ -92,13 +92,13 @@ class _PracticePlayPageState extends State<PracticePlayPage> {
             if (_correctAnswer != null) {
               return Stream.empty();
             }
-            final detectPitch = (chunk) async {
+            detectPitch(chunk) async {
               final pitchDetector = PitchDetector(
                 audioSampleRate: _sampleRate * 1.0,
                 bufferSize: _bufferSize,
               );
               return pitchDetector.getPitchFromIntBuffer(chunk);
-            };
+            }
             return Stream.fromFuture(compute(detectPitch, chunk));
           })
           .expand((result) {
