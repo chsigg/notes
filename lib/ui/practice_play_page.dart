@@ -191,6 +191,7 @@ class _PracticePlayPageState extends State<PracticePlayPage> {
       listen: false,
     ).incrementSessionStats(widget.config.id, isCorrect);
     final statusWidget = () {
+      final color = isCorrect ? Colors.green[400] : Colors.red[400];
       if (isTuning) {
         var tune = exp(ln2 / 12 * semitonesOffset) * targetPitch;
         return SizedBox(
@@ -198,10 +199,7 @@ class _PracticePlayPageState extends State<PracticePlayPage> {
           child: Text(
             '${tune.toStringAsFixed(0)} Hz',
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 24,
-              color: isCorrect ? null : Colors.red[400],
-            ),
+            style: TextStyle(fontSize: 24, color: color),
           ),
         );
       }
@@ -211,7 +209,7 @@ class _PracticePlayPageState extends State<PracticePlayPage> {
             : semitonesOffset < 0
             ? Icons.north
             : Icons.south,
-        color: isCorrect ? Colors.green[400] : Colors.red[400],
+        color: color,
         size: 32,
       );
     }();
