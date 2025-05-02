@@ -34,7 +34,7 @@ class _PracticeNotesPageState extends State<PracticeNotesPage> {
   @override
   void initState() {
     super.initState();
-    _initializeSession();
+    _addQuestions();
   }
 
   @override
@@ -43,14 +43,14 @@ class _PracticeNotesPageState extends State<PracticeNotesPage> {
     super.dispose();
   }
 
-  void _initializeSession() {
-    _questionQueue.addAll(_shuffled([...widget.config.notes]));
+  void _addQuestions() {
+    _questionQueue.addAll(_shuffled([...widget.config.names]));
     _goToNextQuestion();
   }
 
   void _goToNextQuestion() {
     if (_questionQueue.isEmpty) {
-      return _initializeSession();
+      return _addQuestions();
     }
     final question = _questionQueue.removeFirst();
 

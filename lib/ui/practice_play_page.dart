@@ -46,7 +46,7 @@ class _PracticePlayPageState extends State<PracticePlayPage> {
   void initState() {
     super.initState();
     _setupAudioPipeline();
-    _initializeSession();
+    _addQuestions();
   }
 
   @override
@@ -131,7 +131,7 @@ class _PracticePlayPageState extends State<PracticePlayPage> {
     }
   }
 
-  void _initializeSession() {
+  void _addQuestions() {
     if (_aPitch == null) {
       _questionQueue.add('A');
     }
@@ -141,7 +141,7 @@ class _PracticePlayPageState extends State<PracticePlayPage> {
 
   void _goToNextQuestion() {
     if (_questionQueue.isEmpty) {
-      return _initializeSession();
+      return _addQuestions();
     }
     final question = _questionQueue.removeFirst();
     setState(() {
