@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
 import '../models/session_config.dart';
-import '../providers/session_config_provider.dart';
+import '../providers/sessions_provider.dart';
 import '../utils/note_mapping.dart';
 import '../utils/session_icons.dart';
 
@@ -62,7 +62,7 @@ class _SessionEditorPageState extends State<SessionEditorPage> {
 
   void _saveSession() {
     if (_formKey.currentState!.validate()) {
-      final savedConfig = SessionConfig(
+      final config = SessionConfig(
         id: widget.config.id,
         title: _titleController.text.trim(),
         icon: _selectedIconData,
@@ -74,11 +74,8 @@ class _SessionEditorPageState extends State<SessionEditorPage> {
         practicedTests: widget.config.practicedTests,
         successfulTests: widget.config.successfulTests,
       );
-      final sessionProvider = Provider.of<SessionConfigProvider>(
-        context,
-        listen: false,
-      );
-      sessionProvider.updateConfig(savedConfig);
+      final sessions = Provider.of<SessionsProvider>(context, listen: false);
+      sessions.updateConfig(config);
       Navigator.pop(context);
     }
   }

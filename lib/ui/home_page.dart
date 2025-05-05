@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/session_config.dart';
-import '../providers/session_config_provider.dart';
+import '../providers/sessions_provider.dart';
+import '../providers/settings_provider.dart';
 import 'practice_notes_page.dart';
 import 'practice_keys_page.dart';
 import 'practice_play_page.dart';
@@ -19,44 +19,16 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  bool _isEditMode = false;
-  static const _isEditModePrefKey = 'is_edit_mode';
-
   @override
   void initState() {
     super.initState();
-    _loadEditModePreference();
-  }
-
-  Future<void> _loadEditModePreference() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final loadedValue = prefs.getBool(_isEditModePrefKey);
-      if (loadedValue != null && loadedValue != _isEditMode) {
-        setState(() {
-          _isEditMode = loadedValue;
-        });
-      }
-    } catch (e) {
-      // Ignore errors loading the preference.
-    }
-  }
-
-  Future<void> _saveEditModePreference() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool(_isEditModePrefKey, _isEditMode);
-    } catch (e) {
-      // Ignore errors saving the preference.
-    }
   }
 
   Future<void> _confirmDelete(
     BuildContext context,
     SessionConfig config,
   ) async {
-    final provider = Provider.of<SessionConfigProvider>(context, listen: false);
-
+    final sessions = Provider.of<SessionsProvider>(context, listen: false);
     final confirm = await showDialog<bool>(
       context: context,
       builder: (BuildContext dialogContext) {
@@ -79,9 +51,8 @@ class _HomePageState extends State<HomePage> {
         );
       },
     );
-
     if (confirm == true) {
-      provider.deleteConfig(config.id);
+      sessions.deleteConfig(config.id);
     }
   }
 
@@ -110,111 +81,113 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final sessionProvider = context.watch<SessionConfigProvider>();
-    final configs = sessionProvider.configs;
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Helma's Note Trainer"),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: Icon(_isEditMode ? Icons.check : Icons.settings),
-            tooltip: _isEditMode ? 'Done Editing' : 'Manage Sessions',
-            onPressed: () {
-              setState(() {
-                _isEditMode = !_isEditMode;
-              });
-              _saveEditModePreference();
-            },
+    return Consumer2<SessionsProvider, SettingsProvider>(
+      builder: (context, sessions, settings, child) {
+        return Scaffold(
+          appBar: AppBar(
+            // title: const Text("Helma's Note Trainer"),
+            centerTitle: true,
+            actions: [
+              IconButton(
+                icon: Icon(settings.isEditMode ? Icons.check : Icons.settings),
+                tooltip:
+                    settings.isEditMode ? 'Done Editing' : 'Manage Sessions',
+                onPressed: () {
+                  setState(() => settings.setEditMode(!settings.isEditMode));
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.info_outline),
+                tooltip: 'Show Licenses',
+                onPressed: () {
+                  showLicensePage(context: context);
+                },
+              ),
+              SizedBox(width: 16),
+            ],
           ),
-          IconButton(
-            icon: const Icon(Icons.info_outline),
-            tooltip: 'Show Licenses',
-            onPressed: () {
-              showLicensePage(context: context);
-            },
-          ),
-          SizedBox(width: 16),
-        ],
-      ),
 
-      body: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 600.0),
-          child: ListView.builder(
-            shrinkWrap: true,
-            itemCount: configs.length + (_isEditMode ? 1 : 0),
-            itemBuilder: (context, index) {
-              if (index == configs.length) {
-                return ListTile(
-                  dense: true,
-                  visualDensity: VisualDensity(vertical: 4),
-                  trailing: SizedBox(
-                    width: 100,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.add, color: Colors.green),
-                          onPressed: () => _editSession(context, null),
-                          tooltip: 'Add New Session',
+          body: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 600.0),
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount:
+                    sessions.configs.length + (settings.isEditMode ? 1 : 0),
+                itemBuilder: (context, index) {
+                  if (index == sessions.configs.length) {
+                    return ListTile(
+                      dense: true,
+                      visualDensity: VisualDensity(vertical: 4),
+                      trailing: SizedBox(
+                        width: 100,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.add, color: Colors.green),
+                              onPressed: () => _editSession(context, null),
+                              tooltip: 'Add New Session',
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
+                    );
+                  }
+
+                  final config = sessions.configs[index];
+                  final successRate =
+                      config.practicedTests > 0
+                          ? (config.successfulTests /
+                              config.practicedTests *
+                              100.0)
+                          : 100.0;
+
+                  return ListTile(
+                    dense: true,
+                    visualDensity: VisualDensity(vertical: 4),
+                    leading: Icon(config.icon, size: 32),
+                    title: Text(config.title),
+                    subtitle: Text(
+                      'Practiced ${config.practicedTests} times, ${successRate.toStringAsFixed(1)}% correct',
                     ),
-                  ),
-                );
-              }
-
-              final config = configs[index];
-              final successRate =
-                  config.practicedTests > 0
-                      ? (config.successfulTests / config.practicedTests * 100.0)
-                      : 100.0;
-
-              return ListTile(
-                dense: true,
-                visualDensity: VisualDensity(vertical: 4),
-                leading: Icon(config.icon, size: 32),
-                title: Text(config.title),
-                subtitle: Text(
-                  'Practiced ${config.practicedTests} times, ${successRate.toStringAsFixed(1)}% correct',
-                ),
-                onTap: () => _practiceSession(context, config),
-                trailing:
-                    _isEditMode
-                        ? SizedBox(
-                          width: 100,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                icon: const Icon(Icons.edit),
-                                tooltip: 'Edit Session',
-                                onPressed: () {
-                                  _editSession(context, config);
-                                },
+                    onTap: () => _practiceSession(context, config),
+                    trailing:
+                        settings.isEditMode
+                            ? SizedBox(
+                              width: 100,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(Icons.edit),
+                                    tooltip: 'Edit Session',
+                                    onPressed: () {
+                                      _editSession(context, config);
+                                    },
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(
+                                      Icons.delete,
+                                      color: Colors.red,
+                                    ),
+                                    tooltip: 'Delete Session',
+                                    onPressed:
+                                        () => _confirmDelete(context, config),
+                                  ),
+                                ],
                               ),
-                              IconButton(
-                                icon: const Icon(
-                                  Icons.delete,
-                                  color: Colors.red,
-                                ),
-                                tooltip: 'Delete Session',
-                                onPressed:
-                                    () => _confirmDelete(context, config),
-                              ),
-                            ],
-                          ),
-                        )
-                        : null,
-              );
-            },
+                            )
+                            : null,
+                  );
+                },
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

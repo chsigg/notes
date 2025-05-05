@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../models/session_config.dart';
-import '../providers/session_config_provider.dart';
+import '../providers/sessions_provider.dart';
 import '../utils/note_mapping.dart';
 import 'timer_widget.dart';
 
@@ -99,10 +99,8 @@ class _PracticeKeysPageState extends State<PracticeKeysPage> {
   }
 
   void _onTimerEnd() {
-    Provider.of<SessionConfigProvider>(
-      context,
-      listen: false,
-    ).incrementSessionStats(widget.config.id, false);
+    final sessions = Provider.of<SessionsProvider>(context, listen: false);
+    sessions.incrementSessionStats(widget.config.id, false);
     _goToNextQuestion();
   }
 
@@ -111,7 +109,7 @@ class _PracticeKeysPageState extends State<PracticeKeysPage> {
       return;
     }
     final isCorrect = NoteMapping.getNoteFromKey(chosenLabel) == _questionNote;
-    Provider.of<SessionConfigProvider>(
+    Provider.of<SessionsProvider>(
       context,
       listen: false,
     ).incrementSessionStats(widget.config.id, isCorrect);

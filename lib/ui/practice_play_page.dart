@@ -12,7 +12,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../models/session_config.dart';
-import '../providers/session_config_provider.dart';
+import '../providers/sessions_provider.dart';
 import '../utils/note_mapping.dart';
 import 'timer_widget.dart';
 
@@ -191,10 +191,8 @@ class _PracticePlayPageState extends State<PracticePlayPage>
   }
 
   void _onTimerEnd() {
-    Provider.of<SessionConfigProvider>(
-      context,
-      listen: false,
-    ).incrementSessionStats(widget.config.id, false);
+    final sessions = Provider.of<SessionsProvider>(context, listen: false);
+    sessions.incrementSessionStats(widget.config.id, false);
     _goToNextQuestion();
   }
 
@@ -214,10 +212,8 @@ class _PracticePlayPageState extends State<PracticePlayPage>
     if (isCorrect) {
       _aPitch ??= pitch;
     }
-    Provider.of<SessionConfigProvider>(
-      context,
-      listen: false,
-    ).incrementSessionStats(widget.config.id, isCorrect);
+    final sessions = Provider.of<SessionsProvider>(context, listen: false);
+    sessions.incrementSessionStats(widget.config.id, isCorrect);
     final statusWidget = () {
       final color = isCorrect ? Colors.green[400] : Colors.red[400];
       if (isTuning) {
