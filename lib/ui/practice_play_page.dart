@@ -28,17 +28,18 @@ class PracticePlayPage extends StatefulWidget {
 class _PracticePlayPageState extends State<PracticePlayPage>
     with WidgetsBindingObserver {
   TimerWidget? _timerWidget;
-  double? _aPitch;
   Timer _answerTimer = Timer(Duration.zero, () {});
+
+  late String _questionNote;
+  double? _aPitch;
+
   Widget? _statusWidget;
   String? _errorMessage;
 
   StreamSubscription<double>? _pitchSubscription;
 
-  late String _currentQuestion;
-
   final _audioRecorder = AudioRecorder();
-  final _questionQueue = Queue<String>();
+  final _notesQueue = Queue<String>();
   final Random _random = Random();
 
   static const int _sampleRate = 44100;
@@ -160,20 +161,20 @@ class _PracticePlayPageState extends State<PracticePlayPage>
 
   void _addQuestions() {
     if (_aPitch == null) {
-      _questionQueue.add('A');
+      _notesQueue.add('A');
     }
-    _questionQueue.addAll(_shuffled([...widget.config.names]));
+    _notesQueue.addAll(_shuffled([...widget.config.notes]));
     _goToNextQuestion();
   }
 
   void _goToNextQuestion() {
-    if (_questionQueue.isEmpty) {
+    if (_notesQueue.isEmpty) {
       return _addQuestions();
     }
-    final question = _questionQueue.removeFirst();
+    final note = _notesQueue.removeFirst();
     setState(() {
       _statusWidget = null;
-      _currentQuestion = question;
+      _questionNote = note;
       if (_aPitch != null && widget.config.timeLimitSeconds > 0) {
         _timerWidget = TimerWidget(
           key: UniqueKey(),
@@ -202,9 +203,9 @@ class _PracticePlayPageState extends State<PracticePlayPage>
       return;
     }
     final targetPitch = _aPitch ?? 440.0;
-    final playedTone = 12 / ln2 * log(pitch / targetPitch);
-    final targetTone = NoteMapping.getNumSemitonesFromA(_currentQuestion);
-    var semitonesOffset = playedTone % 12 - targetTone;
+    final playedInteger = 9 + 12 / ln2 * log(pitch / targetPitch);
+    final targetInteger = NoteMapping.getIntegerFromNote(_questionNote);
+    var semitonesOffset = playedInteger % 12 - targetInteger;
     if (semitonesOffset > 6) {
       semitonesOffset -= 12;
     }
@@ -260,7 +261,7 @@ class _PracticePlayPageState extends State<PracticePlayPage>
           children: [
             // --- The Question Display ---
             Text(
-              _currentQuestion,
+              NoteMapping.getNameFromNote(_questionNote),
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 72),
             ),

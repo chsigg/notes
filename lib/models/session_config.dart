@@ -3,7 +3,11 @@ import 'package:flutter/material.dart';
 import '../utils/note_mapping.dart';
 import '../utils/session_icons.dart';
 
-enum SessionType { notes, names, play }
+enum SessionType {
+  keys, // Show note, select key.
+  notes, // Show key, select note.
+  play, // Show note, detect pitch.
+}
 
 class SessionConfig {
   final String id;
@@ -11,8 +15,8 @@ class SessionConfig {
   IconData icon;
 
   SessionType type;
+  List<String> keys;
   List<String> notes;
-  List<String> names;
   int numChoices;
   int timeLimitSeconds;
 
@@ -24,8 +28,8 @@ class SessionConfig {
     required this.title,
     required this.icon,
     required this.type,
+    required this.keys,
     required this.notes,
-    required this.names,
     this.numChoices = 3,
     this.timeLimitSeconds = 0,
     this.practicedTests = 0,
@@ -38,8 +42,8 @@ class SessionConfig {
       title: json['title'] as String,
       icon: _iconFromJsonManual(json['icon'] as Map<String, dynamic>),
       type: _sessionTypeFromJsonManual(json['type'] as String),
+      keys: List<String>.from(json['keys'] as List),
       notes: List<String>.from(json['notes'] as List),
-      names: List<String>.from(json['names'] as List),
       numChoices: json['numChoices'] as int,
       timeLimitSeconds: json['timeLimitSeconds'] as int,
       practicedTests: json['practicedTests'] as int,
@@ -53,8 +57,8 @@ class SessionConfig {
       'title': title,
       'icon': _iconToJsonManual(icon),
       'type': _sessionTypeToJsonManual(type),
+      'keys': keys,
       'notes': notes,
-      'names': names,
       'numChoices': numChoices,
       'timeLimitSeconds': timeLimitSeconds,
       'practicedTests': practicedTests,
@@ -85,7 +89,7 @@ class SessionConfig {
   static SessionType _sessionTypeFromJsonManual(String typeName) {
     return SessionType.values.firstWhere(
       (e) => e.name == typeName,
-      orElse: () => SessionType.names,
+      orElse: () => SessionType.notes,
     );
   }
 
@@ -95,33 +99,33 @@ class SessionConfig {
         id: '1',
         title: 'Treble Names',
         icon: SessionIcons.trebleIcon,
-        type: SessionType.names,
-        notes: NoteMapping.getAllTrebleNotes(),
-        names: NoteMapping.getAllNames(),
+        type: SessionType.notes,
+        keys: NoteMapping.getAllTrebleKeys(),
+        notes: NoteMapping.getAllNotes(),
       ),
       SessionConfig(
         id: '2',
         title: 'Bass Names',
         icon: SessionIcons.bassIcon,
-        type: SessionType.names,
-        notes: NoteMapping.getAllBaseNotes(),
-        names: NoteMapping.getAllNames(),
+        type: SessionType.notes,
+        keys: NoteMapping.getAllBaseKeys(),
+        notes: NoteMapping.getAllNotes(),
       ),
       SessionConfig(
         id: '3',
         title: 'All Notes',
         icon: Icons.music_note,
-        type: SessionType.notes,
+        type: SessionType.keys,
+        keys: NoteMapping.getAllKeys(),
         notes: NoteMapping.getAllNotes(),
-        names: NoteMapping.getAllNames(),
       ),
       SessionConfig(
         id: '4',
         title: 'Play',
         icon: Icons.mic,
         type: SessionType.play,
-        notes: [],
-        names: [...NoteMapping.getAllNames().take(7)],
+        keys: [],
+        notes: [...NoteMapping.getAllNotes().take(7)],
       ),
     ];
   }

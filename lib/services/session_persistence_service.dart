@@ -4,12 +4,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/session_config.dart';
 
-const _sessionsDataKey = 'sessions_data';
+const _sessionsConfigsKey = 'sessions_configs_v2';
 
 Future<List<SessionConfig>> loadSessionsFromPrefs() async {
   try {
     final prefs = await SharedPreferences.getInstance();
-    final jsonString = prefs.getString(_sessionsDataKey);
+    final jsonString = prefs.getString(_sessionsConfigsKey);
     if (jsonString == null || jsonString.isEmpty) {
       return [];
     }
@@ -34,7 +34,7 @@ Future<bool> saveSessionsToPrefs(List<SessionConfig> sessions) async {
     final prefs = await SharedPreferences.getInstance();
     final jsonList = sessions.map((session) => session.toJson()).toList();
     final jsonString = jsonEncode(jsonList);
-    await prefs.setString(_sessionsDataKey, jsonString);
+    await prefs.setString(_sessionsConfigsKey, jsonString);
     return true;
   } catch (e) {
     return false;

@@ -21,14 +21,14 @@ class PracticeNotesPage extends StatefulWidget {
 
 class _PracticeNotesPageState extends State<PracticeNotesPage> {
   TimerWidget? _timerWidget;
-  String? _correctAnswer;
-  Set<String> _incorrectAnswers = {};
-  Timer? _answerTimer;
+  Timer? _nextQuestionTimer;
 
-  late String _currentQuestion;
-  late List<String> _currentChoices;
+  late String _questionKey;
+  late List<String> _answerNotes;
+  String? _correctNote;
+  Set<String> _incorrectNotes = {};
 
-  final _questionQueue = Queue<String>();
+  final _keyQueue = Queue<String>();
   final Random _random = Random();
 
   @override
@@ -39,51 +39,44 @@ class _PracticeNotesPageState extends State<PracticeNotesPage> {
 
   @override
   void dispose() {
-    _answerTimer?.cancel();
+    _nextQuestionTimer?.cancel();
     super.dispose();
   }
 
   void _addQuestions() {
-    _questionQueue.addAll(_shuffled([...widget.config.names]));
+    _keyQueue.addAll(_shuffled([...widget.config.keys]));
     _goToNextQuestion();
   }
 
   void _goToNextQuestion() {
-    if (_questionQueue.isEmpty) {
+    if (_keyQueue.isEmpty) {
       return _addQuestions();
     }
-    final question = _questionQueue.removeFirst();
-
+    final key = _keyQueue.removeFirst();
     // Determine the list of choices by adding notes to a set in a specific
-    // order: one correct answer, selected notes with the same accidental,
+    // order: the correct answer, selected notes with the same accidental,
     // all selected notes, and finally all notes with the same accidental if the
     // user has selected less notes than the number of choices to display.
-    // Note that duplicates will not be included in the set. Show the requested
-    // number of leading elements in random order.
-    final allNotes = _shuffled(NoteMapping.getAllNotes());
+    // Elements are only included once in the set and have a stable order.
+    // Show the requested number of leading elements in random order.
     final selectedNotes = _shuffled([...widget.config.notes]);
-    isCorrectNote(note) => NoteMapping.getNoteName(note) == question;
-    final choices = <String>{
-      selectedNotes.firstWhere(
-        isCorrectNote,
-        orElse: () => allNotes.firstWhere(isCorrectNote),
-      ),
-    };
+    final choices = <String>{NoteMapping.getNoteFromKey(key)};
+    final preferredKeys = NoteMapping.getSameAccidentalKeys(key);
     final preferredNotes = <String>{
-      ...NoteMapping.getSameAccidentalNotes(choices.first),
+      ...preferredKeys.map(NoteMapping.getNoteFromKey),
     };
     isPreferredNote(note) => preferredNotes.contains(note);
     choices.addAll(selectedNotes.where(isPreferredNote));
     choices.addAll(selectedNotes);
     if (choices.length < widget.config.numChoices) {
-      choices.addAll(allNotes.where(isPreferredNote));
+      choices.addAll(_shuffled([...preferredNotes]));
     }
 
     setState(() {
-      _currentQuestion = question;
-      _currentChoices = _shuffled([...choices.take(widget.config.numChoices)]);
-      _correctAnswer = null;
-      _incorrectAnswers = {};
+      _questionKey = key;
+      _answerNotes = _shuffled([...choices.take(widget.config.numChoices)]);
+      _correctNote = null;
+      _incorrectNotes = {};
       if (widget.config.timeLimitSeconds > 0) {
         _timerWidget = TimerWidget(
           key: UniqueKey(),
@@ -107,23 +100,23 @@ class _PracticeNotesPageState extends State<PracticeNotesPage> {
     _goToNextQuestion();
   }
 
-  void _handleAnswerTap(String chosenLabel) {
-    if (_correctAnswer != null) {
+  void _handleAnswerTap(String chosenNote) {
+    if (_correctNote != null) {
       return;
     }
-    final isCorrect = NoteMapping.getNoteName(chosenLabel) == _currentQuestion;
+    final isCorrect = chosenNote == NoteMapping.getNoteFromKey(_questionKey);
     Provider.of<SessionConfigProvider>(
       context,
       listen: false,
     ).incrementSessionStats(widget.config.id, isCorrect);
     if (isCorrect) {
-      setState(() => _correctAnswer = chosenLabel);
-      _answerTimer = Timer(
+      setState(() => _correctNote = chosenNote);
+      _nextQuestionTimer = Timer(
         const Duration(milliseconds: 500),
         () => _goToNextQuestion(),
       );
     } else {
-      setState(() => _incorrectAnswers.add(chosenLabel));
+      setState(() => _incorrectNotes.add(chosenNote));
     }
   }
 
@@ -139,36 +132,39 @@ class _PracticeNotesPageState extends State<PracticeNotesPage> {
         child: ListView(
           shrinkWrap: true,
           children: [
-            // --- The Question Display ---
-            Text(
-              _currentQuestion,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 72),
+            // --- The Question Display (Wrapped in Padding) ---
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 48),
+              child: Text(
+                NoteMapping.getGlyphsFromKey(_questionKey),
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 48,
+                  fontFamily: 'StaffClefPitches',
+                ),
+              ),
             ),
             const SizedBox(height: 12),
             // --- Wrap of Answer Buttons ---
             Wrap(
               alignment: WrapAlignment.center,
               children:
-                  _currentChoices.map((choice) {
+                  _answerNotes.map((note) {
                     Color? buttonColor;
-                    if (_correctAnswer == choice) {
+                    if (_correctNote == note) {
                       buttonColor = Colors.green[400];
-                    } else if (_incorrectAnswers.contains(choice)) {
+                    } else if (_incorrectNotes.contains(note)) {
                       buttonColor = Colors.red[400];
                     }
                     return Padding(
                       padding: const EdgeInsets.all(12),
                       child: ElevatedButton(
-                        onPressed: () => _handleAnswerTap(choice),
+                        onPressed: () => _handleAnswerTap(note),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: buttonColor,
-                          textStyle: const TextStyle(
-                            fontSize: 32,
-                            fontFamily: 'StaffClefPitches',
-                          ),
+                          textStyle: const TextStyle(fontSize: 48),
                         ),
-                        child: Text(NoteMapping.getNoteStaff(choice)),
+                        child: Text(NoteMapping.getNameFromNote(note)),
                       ),
                     );
                   }).toList(),

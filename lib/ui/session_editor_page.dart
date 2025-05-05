@@ -17,9 +17,9 @@ class SessionEditorPage extends StatefulWidget {
             id: const Uuid().v4(),
             title: 'New Session',
             icon: Icons.music_note,
-            type: SessionType.notes,
+            type: SessionType.keys,
+            keys: const [],
             notes: const [],
-            names: const [],
             numChoices: 3,
           ),
       super();
@@ -37,8 +37,8 @@ class _SessionEditorPageState extends State<SessionEditorPage> {
   late SessionType _selectedType;
   late int _selectedNumChoices;
 
+  Set<String> _selectedKeys = {};
   Set<String> _selectedNotes = {};
-  Set<String> _selectedNames = {};
 
   @override
   void initState() {
@@ -49,8 +49,8 @@ class _SessionEditorPageState extends State<SessionEditorPage> {
     _selectedType = widget.config.type;
     _selectedIconData = widget.config.icon;
     _selectedNumChoices = widget.config.numChoices;
+    _selectedKeys = Set.from(widget.config.keys);
     _selectedNotes = Set.from(widget.config.notes);
-    _selectedNames = Set.from(widget.config.names);
   }
 
   @override
@@ -67,8 +67,8 @@ class _SessionEditorPageState extends State<SessionEditorPage> {
         title: _titleController.text.trim(),
         icon: _selectedIconData,
         type: _selectedType,
+        keys: _selectedKeys.toList(),
         notes: _selectedNotes.toList(),
-        names: _selectedNames.toList(),
         numChoices: _selectedNumChoices,
         timeLimitSeconds: int.tryParse(_timeLimitController.text) ?? 0,
         practicedTests: widget.config.practicedTests,
@@ -147,8 +147,8 @@ class _SessionEditorPageState extends State<SessionEditorPage> {
     );
   }
 
-  Widget _buildSelectionGridForNames() {
-    final allNames = NoteMapping.getAllNames();
+  Widget _buildSelectionGridForNotes() {
+    final allNotes = NoteMapping.getAllNotes();
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -156,24 +156,24 @@ class _SessionEditorPageState extends State<SessionEditorPage> {
         crossAxisCount: 7,
         mainAxisExtent: 72,
       ),
-      itemCount: allNames.length,
+      itemCount: allNotes.length,
       itemBuilder: (context, index) {
-        final item = allNames[index];
+        final note = allNotes[index];
         final style = const TextStyle(fontSize: 32);
-        final isSelected = _selectedNames.contains(item);
-        return _buildItem(item, style, () {
+        final isSelected = _selectedNotes.contains(note);
+        return _buildItem(NoteMapping.getNameFromNote(note), style, () {
           if (isSelected) {
-            _selectedNames.remove(item);
+            _selectedNotes.remove(note);
           } else {
-            _selectedNames.add(item);
+            _selectedNotes.add(note);
           }
         }, isSelected);
       },
     );
   }
 
-  Widget _buildSelectionGridForNotes() {
-    final allNotes = NoteMapping.getAllNotes();
+  Widget _buildSelectionGridForKeys() {
+    final allNotes = NoteMapping.getAllKeys();
     allNotes.insert(83, ''); // Highest note has no sharp, insert dummy node.
     final style = const TextStyle(fontSize: 24, fontFamily: 'StaffClefPitches');
     return GridView.builder(
@@ -193,13 +193,13 @@ class _SessionEditorPageState extends State<SessionEditorPage> {
               .sublist(index - row)
               .take(row % 12 == 11 ? 6 : 7);
           final item = rowElements.first;
-          final text = '    ${NoteMapping.getNoteStaff(item)[0]}+';
-          final isSelected = _selectedNotes.containsAll(rowElements);
+          final text = '    ${NoteMapping.getGlyphsFromKey(item)[0]}+';
+          final isSelected = _selectedKeys.containsAll(rowElements);
           return _buildItem(text, style, () {
             if (isSelected) {
-              _selectedNotes.removeAll(rowElements);
+              _selectedKeys.removeAll(rowElements);
             } else {
-              _selectedNotes.addAll(rowElements);
+              _selectedKeys.addAll(rowElements);
             }
           }, isSelected);
         }
@@ -208,13 +208,13 @@ class _SessionEditorPageState extends State<SessionEditorPage> {
         if (item.isEmpty) {
           return const SizedBox();
         }
-        final text = '+${NoteMapping.getNoteStaff(item)[2]}+';
-        final isSelected = _selectedNotes.contains(item);
+        final text = '+${NoteMapping.getGlyphsFromKey(item)[2]}+';
+        final isSelected = _selectedKeys.contains(item);
         return _buildItem(text, style, () {
           if (isSelected) {
-            _selectedNotes.remove(item);
+            _selectedKeys.remove(item);
           } else {
-            _selectedNotes.add(item);
+            _selectedKeys.add(item);
           }
         }, isSelected);
       },
@@ -288,25 +288,32 @@ class _SessionEditorPageState extends State<SessionEditorPage> {
                   const SizedBox(height: 32),
 
                   ListTile(
-                    title: Text('Difficulty'),
-                    trailing: SegmentedButton<int>(
+                    title: Text('Type:'),
+                    trailing: SegmentedButton<SessionType>(
                       segments: [
-                        ButtonSegment<int>(value: 1, label: Text('1')),
-                        ButtonSegment<int>(value: 2, label: Text('2')),
-                        ButtonSegment<int>(value: 3, label: Text('3')),
-                        ButtonSegment<int>(value: 4, label: Text('4')),
-                        ButtonSegment<int>(value: 5, label: Text('5')),
+                        ButtonSegment<SessionType>(
+                          value: SessionType.notes,
+                          label: Text('C'),
+                        ),
+                        ButtonSegment<SessionType>(
+                          value: SessionType.keys,
+                          label: Icon(Icons.music_note),
+                        ),
+                        ButtonSegment<SessionType>(
+                          value: SessionType.play,
+                          label: Icon(Icons.mic),
+                        ),
                       ],
-                      selected: {_selectedNumChoices},
+                      selected: {_selectedType},
                       onSelectionChanged: (selection) {
-                        setState(() => _selectedNumChoices = selection.first);
+                        setState(() => _selectedType = selection.first);
                       },
                     ),
                   ),
                   const SizedBox(height: 32),
 
                   ListTile(
-                    title: Text('Time Limit'),
+                    title: Text('Time Limit:'),
                     trailing: IntrinsicWidth(
                       child: TextFormField(
                         controller: _timeLimitController,
@@ -331,42 +338,17 @@ class _SessionEditorPageState extends State<SessionEditorPage> {
                   ),
                   const SizedBox(height: 32),
 
-                  ListTile(
-                    title: Text('Answer Type'),
-                    trailing: SegmentedButton<SessionType>(
-                      segments: [
-                        ButtonSegment<SessionType>(
-                          value: SessionType.notes,
-                          label: Text('Notes'),
-                        ),
-                        ButtonSegment<SessionType>(
-                          value: SessionType.names,
-                          label: Text('Names'),
-                        ),
-                        ButtonSegment<SessionType>(
-                          value: SessionType.play,
-                          label: Text('Play'),
-                        ),
-                      ],
-                      selected: {_selectedType},
-                      onSelectionChanged: (selection) {
-                        setState(() => _selectedType = selection.first);
-                      },
-                    ),
-                  ),
-                  const SizedBox(height: 32),
-
-                  _buildNonEmptyValidator(_selectedNames),
+                  _buildNonEmptyValidator(_selectedNotes),
                   const SizedBox(height: 16),
 
-                  _buildSelectionGridForNames(),
+                  _buildSelectionGridForNotes(),
                   const SizedBox(height: 32),
 
                   if (_selectedType != SessionType.play) ...[
-                    _buildNonEmptyValidator(_selectedNotes),
+                    _buildNonEmptyValidator(_selectedKeys),
                     const SizedBox(height: 16),
 
-                    _buildSelectionGridForNotes(),
+                    _buildSelectionGridForKeys(),
                     const SizedBox(height: 32),
                   ],
                 ],

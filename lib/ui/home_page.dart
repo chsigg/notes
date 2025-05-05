@@ -6,8 +6,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/session_config.dart';
 import '../providers/session_config_provider.dart';
-import 'practice_names_page.dart';
 import 'practice_notes_page.dart';
+import 'practice_keys_page.dart';
 import 'practice_play_page.dart';
 import 'session_editor_page.dart';
 
@@ -100,8 +100,8 @@ class _HomePageState extends State<HomePage> {
       MaterialPageRoute(
         builder:
             (context) => switch (config.type) {
+              SessionType.keys => PracticeKeysPage(config: config),
               SessionType.notes => PracticeNotesPage(config: config),
-              SessionType.names => PracticeNamesPage(config: config),
               SessionType.play => PracticePlayPage(config: config),
             },
       ),

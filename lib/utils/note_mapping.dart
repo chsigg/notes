@@ -3,9 +3,9 @@
 import 'dart:collection';
 
 class NoteMapping {
-  // This map defines the mapping from standard note names (String)
-  // to the string in the 'StaffClefPitches' font (String).
-  static final Map<String, String> _noteToStaffMap =
+  // This map defines the mapping from note key (String, e.g. 'tC4')
+  // to the glyphs in the 'StaffClefPitches' font (String).
+  static final Map<String, String> _glyphsMap =
       LinkedHashMap<String, String>.from({
         'tC3': '&=z=|',
         'tD3': '&=x=|',
@@ -180,112 +180,115 @@ class NoteMapping {
         'bC#5': '?=^=|',
       });
 
-  // This map defines the mapping from short standard note names (String)
+  // This map defines the mapping from note (String, e.g. 'C')
   // to the their German name (String).
   static final Map<String, String> _noteToNameMap =
       LinkedHashMap<String, String>.from({
+        'A': 'A',
+        'B': 'H',
         'C': 'C',
         'D': 'D',
         'E': 'E',
         'F': 'F',
         'G': 'G',
-        'A': 'A',
-        'B': 'H',
 
+        'Ab': 'As',
+        'Bb': 'B',
         'Cb': 'Ces',
         'Db': 'Des',
         'Eb': 'Es',
         'Fb': 'Fes',
         'Gb': 'Ges',
-        'Ab': 'As',
-        'Bb': 'B',
 
+        'A#': 'Ais',
+        'B#': 'His',
         'C#': 'Cis',
         'D#': 'Dis',
         'E#': 'Eis',
         'F#': 'Fis',
         'G#': 'Gis',
-        'A#': 'Ais',
-        'B#': 'His',
       });
 
-  // Gets the staff string for a given note.
-  static String getNoteStaff(String note) {
+  // Gets the glyphs for a given note.
+  static String getGlyphsFromKey(String key) {
     // Look up the character, providing a fallback if the key doesn't exist.
-    return _noteToStaffMap[note] ?? '+';
+    return _glyphsMap[key] ?? '+';
   }
 
-  // Gets the name string for a given note.
-  static String getNoteName(String note) {
-    if (note.length < 3) throw Exception('Invalid note: $note');
-    // Look up the name, providing a fallback if the key doesn't exist.
-    final key = note.substring(1, note.length - 1);
-    return _noteToNameMap[key] ?? note;
+  // Gets the note for a given key.
+  static String getNoteFromKey(String key) {
+    assert(key.length >= 3, 'Invalid key: $key');
+    return key.substring(1, key.length - 1);
   }
 
-  static int getNumSemitonesFromA(String name) {
+  static String getNameFromNote(String note) {
+    return _noteToNameMap[note] ?? note;
+  }
+
+  // Returns the value of a note in integer notation.
+  static int getIntegerFromNote(String name) {
     switch (_noteToNameMap.entries
         .firstWhere((entry) => entry.value == name)
         .key) {
       case 'A':
-        return 0;
+        return 9;
       case 'A#':
       case 'Bb':
-        return 1;
+        return 10;
       case 'B':
       case 'Cb':
-        return 2;
+        return 11;
       case 'B#':
       case 'C':
-        return 3;
+        return 0;
       case 'C#':
       case 'Db':
-        return 4;
+        return 1;
       case 'D':
-        return 5;
+        return 2;
       case 'D#':
       case 'Eb':
-        return 6;
+        return 3;
       case 'E':
       case 'Fb':
-        return 7;
+        return 4;
       case 'E#':
       case 'F':
-        return 8;
+        return 5;
       case 'F#':
       case 'Gb':
-        return 9;
+        return 6;
       case 'G':
-        return 10;
+        return 7;
       case 'G#':
       case 'Ab':
-        return 11;
+        return 8;
       default:
         throw Exception('Invalid note: $name');
     }
   }
 
-  static List<String> getAllNames() {
-    return [..._noteToNameMap.values];
+  static List<String> getAllNotes() {
+    return [..._noteToNameMap.keys];
   }
 
-  static Iterable<String> getSameAccidentalNotes(String note) {
+  static Iterable<String> getSameAccidentalKeys(String note) {
     if (note.length < 3) throw Exception('Invalid note: $note');
     getAccidental(note) => note.substring(2, note.length - 1);
-    return _noteToStaffMap.keys.where(
+    return _glyphsMap.keys.where(
       (key) => getAccidental(key) == getAccidental(note),
     );
   }
 
-  static List<String> getAllNotes() {
-    return [..._noteToStaffMap.keys];
+  static List<String> getAllKeys() {
+    return [..._glyphsMap.keys];
   }
 
-  static List<String> getAllTrebleNotes() {
-    return [...getAllNotes().where((key) => key.startsWith('t'))];
+  static List<String> getAllTrebleKeys() {
+    return [..._glyphsMap.keys.where((key) => key.startsWith('t'))];
   }
 
-  static List<String> getAllBaseNotes() {
-    return [...getAllNotes().where((key) => key.startsWith('b'))];
+  static List<String> getAllBaseKeys() {
+    return [..._glyphsMap.keys.where((key) => key.startsWith('b'))];
   }
 }

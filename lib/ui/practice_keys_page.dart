@@ -10,25 +10,25 @@ import '../providers/session_config_provider.dart';
 import '../utils/note_mapping.dart';
 import 'timer_widget.dart';
 
-class PracticeNamesPage extends StatefulWidget {
+class PracticeKeysPage extends StatefulWidget {
   final SessionConfig config;
 
-  const PracticeNamesPage({super.key, required this.config});
+  const PracticeKeysPage({super.key, required this.config});
 
   @override
-  State<PracticeNamesPage> createState() => _PracticeNamesPageState();
+  State<PracticeKeysPage> createState() => _PracticeKeysPageState();
 }
 
-class _PracticeNamesPageState extends State<PracticeNamesPage> {
+class _PracticeKeysPageState extends State<PracticeKeysPage> {
   TimerWidget? _timerWidget;
-  String? _correctAnswer;
-  Set<String> _incorrectAnswers = {};
-  Timer? _answerTimer;
+  Timer? _nextQuestionTimer;
 
-  late String _currentQuestion;
-  late List<String> _currentChoices;
+  late String _questionNote;
+  late List<String> _answerKeys;
+  String? _correctKey;
+  Set<String> _incorrectKeys = {};
 
-  final _questionQueue = Queue<String>();
+  final _noteQueue = Queue<String>();
   final Random _random = Random();
 
   @override
@@ -39,45 +39,50 @@ class _PracticeNamesPageState extends State<PracticeNamesPage> {
 
   @override
   void dispose() {
-    _answerTimer?.cancel();
+    _nextQuestionTimer?.cancel();
     super.dispose();
   }
 
   void _addQuestions() {
-    _questionQueue.addAll(_shuffled([...widget.config.notes]));
+    _noteQueue.addAll(_shuffled([...widget.config.notes]));
     _goToNextQuestion();
   }
 
   void _goToNextQuestion() {
-    if (_questionQueue.isEmpty) {
+    if (_noteQueue.isEmpty) {
       return _addQuestions();
     }
-    final question = _questionQueue.removeFirst();
-
-    // Determine the list of choices by adding names to a set in a specific
-    // order: the correct answer, selected names with the same accidental,
-    // all selected names, and finally all names with the same accidental if the
-    // user has selected less names than the number of choices to display.
-    // Note that duplicates will not be included in the set. Show the requested
-    // number of leading elements in random order.
-    final selectedNames = _shuffled([...widget.config.names]);
-    final choices = <String>{NoteMapping.getNoteName(question)};
-    final preferredNotes = NoteMapping.getSameAccidentalNotes(question);
-    final preferredNames = <String>{
-      ...preferredNotes.map(NoteMapping.getNoteName),
+    final note = _noteQueue.removeFirst();
+    // Determine the list of choices by adding keys to a set in a specific
+    // order: one correct answer, selected keys with the same accidental,
+    // all selected keys, and finally all keys with the same accidental if the
+    // user has selected less keys than the number of choices to display.
+    // Elements are only included once in the set and have a stable order.
+    // Show the requested number of leading elements in random order.
+    final allKeys = _shuffled(NoteMapping.getAllKeys());
+    final selectedKeys = _shuffled([...widget.config.keys]);
+    isCorrectKey(key) => NoteMapping.getNoteFromKey(key) == note;
+    final choices = <String>{
+      selectedKeys.firstWhere(
+        isCorrectKey,
+        orElse: () => allKeys.firstWhere(isCorrectKey),
+      ),
     };
-    isPreferredName(name) => preferredNames.contains(name);
-    choices.addAll(selectedNames.where(isPreferredName));
-    choices.addAll(selectedNames);
+    final preferredKeys = <String>{
+      ...NoteMapping.getSameAccidentalKeys(choices.first),
+    };
+    isPreferredKey(key) => preferredKeys.contains(key);
+    choices.addAll(selectedKeys.where(isPreferredKey));
+    choices.addAll(selectedKeys);
     if (choices.length < widget.config.numChoices) {
-      choices.addAll(_shuffled([...preferredNames]));
+      choices.addAll(allKeys.where(isPreferredKey));
     }
 
     setState(() {
-      _currentQuestion = question;
-      _currentChoices = _shuffled([...choices.take(widget.config.numChoices)]);
-      _correctAnswer = null;
-      _incorrectAnswers = {};
+      _questionNote = note;
+      _answerKeys = _shuffled([...choices.take(widget.config.numChoices)]);
+      _correctKey = null;
+      _incorrectKeys = {};
       if (widget.config.timeLimitSeconds > 0) {
         _timerWidget = TimerWidget(
           key: UniqueKey(),
@@ -102,22 +107,22 @@ class _PracticeNamesPageState extends State<PracticeNamesPage> {
   }
 
   void _handleAnswerTap(String chosenLabel) {
-    if (_correctAnswer != null) {
+    if (_correctKey != null) {
       return;
     }
-    final isCorrect = chosenLabel == NoteMapping.getNoteName(_currentQuestion);
+    final isCorrect = NoteMapping.getNoteFromKey(chosenLabel) == _questionNote;
     Provider.of<SessionConfigProvider>(
       context,
       listen: false,
     ).incrementSessionStats(widget.config.id, isCorrect);
     if (isCorrect) {
-      setState(() => _correctAnswer = chosenLabel);
-      _answerTimer = Timer(
+      setState(() => _correctKey = chosenLabel);
+      _nextQuestionTimer = Timer(
         const Duration(milliseconds: 500),
         () => _goToNextQuestion(),
       );
     } else {
-      setState(() => _incorrectAnswers.add(chosenLabel));
+      setState(() => _incorrectKeys.add(chosenLabel));
     }
   }
 
@@ -133,28 +138,22 @@ class _PracticeNamesPageState extends State<PracticeNamesPage> {
         child: ListView(
           shrinkWrap: true,
           children: [
-            // --- The Question Display (Wrapped in Padding) ---
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 48),
-              child: Text(
-                NoteMapping.getNoteStaff(_currentQuestion),
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 48,
-                  fontFamily: 'StaffClefPitches',
-                ),
-              ),
+            // --- The Question Display ---
+            Text(
+              NoteMapping.getNameFromNote(_questionNote),
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 72),
             ),
             const SizedBox(height: 12),
             // --- Wrap of Answer Buttons ---
             Wrap(
               alignment: WrapAlignment.center,
               children:
-                  _currentChoices.map((choice) {
+                  _answerKeys.map((choice) {
                     Color? buttonColor;
-                    if (_correctAnswer == choice) {
+                    if (_correctKey == choice) {
                       buttonColor = Colors.green[400];
-                    } else if (_incorrectAnswers.contains(choice)) {
+                    } else if (_incorrectKeys.contains(choice)) {
                       buttonColor = Colors.red[400];
                     }
                     return Padding(
@@ -163,9 +162,12 @@ class _PracticeNamesPageState extends State<PracticeNamesPage> {
                         onPressed: () => _handleAnswerTap(choice),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: buttonColor,
-                          textStyle: const TextStyle(fontSize: 48),
+                          textStyle: const TextStyle(
+                            fontSize: 32,
+                            fontFamily: 'StaffClefPitches',
+                          ),
                         ),
-                        child: Text(choice),
+                        child: Text(NoteMapping.getGlyphsFromKey(choice)),
                       ),
                     );
                   }).toList(),
