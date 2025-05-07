@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:note_trainer/providers/settings_provider.dart';
-import 'package:note_trainer/utils/note_mapping.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
 import 'providers/sessions_provider.dart';
+import 'providers/settings_provider.dart';
 import 'ui/home_page.dart';
+import 'utils/note_mapping.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,9 +37,17 @@ class _MyAppState extends State<_MyApp> {
               primarySwatch: Colors.blue,
               visualDensity: VisualDensity.adaptivePlatformDensity,
             ),
-            supportedLocales: NoteLocalizations.supportedLocales,
-            localizationsDelegates: [NoteLocalizationsDelegate()],
-            locale: settings.locale,
+            supportedLocales: NoteLocalizations.supportedLanguages.map(
+              (language) => Locale(language),
+            ),
+            localizationsDelegates: [
+              NoteLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            locale:
+                settings.language != null ? Locale(settings.language!) : null,
             home: HomePage(),
           ),
     );

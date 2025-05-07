@@ -6,9 +6,9 @@ import 'package:provider/provider.dart';
 import '../models/session_config.dart';
 import '../providers/sessions_provider.dart';
 import '../providers/settings_provider.dart';
-
-import 'practice_notes_page.dart';
+import '../utils/note_mapping.dart';
 import 'practice_keys_page.dart';
+import 'practice_notes_page.dart';
 import 'practice_play_page.dart';
 import 'session_editor_page.dart';
 
@@ -70,19 +70,93 @@ class HomePage extends StatelessWidget {
     );
   }
 
+  Widget _buildItem(
+    BuildContext context,
+    int index,
+    List<SessionConfig> configs,
+    bool isEditMode,
+  ) {
+    const double leadingWidth = 64;
+
+    if (index == 0) {
+      return ListTile(
+        leading: SizedBox(
+          width: leadingWidth,
+          child: Center(child: const Icon(Icons.check, color: Colors.green)),
+        ),
+      );
+    }
+
+    if (index > configs.length) {
+      return ListTile(
+        trailing: IconButton(
+          icon: const Icon(Icons.add, color: Colors.green),
+          onPressed: () => _editSession(context, null),
+          tooltip: 'Add New Session',
+        ),
+      );
+    }
+
+    final config = configs[index - 1];
+
+    var successCountString = '${config.successfulTests}';
+    if (config.practicedTests > 0) {
+      final successRate = config.successfulTests / config.practicedTests;
+      successCountString += ' (${(successRate * 100.0).toStringAsFixed(0)}%)';
+    }
+
+    final editButtons = Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        IconButton(
+          icon: const Icon(Icons.edit),
+          tooltip: 'Edit Session',
+          onPressed: () {
+            _editSession(context, config);
+          },
+        ),
+        IconButton(
+          icon: const Icon(Icons.delete, color: Colors.red),
+          tooltip: 'Delete Session',
+          onPressed: () => _confirmDelete(context, config),
+        ),
+      ],
+    );
+
+    return ListTile(
+      dense: true,
+      visualDensity: VisualDensity(vertical: 4),
+      leading: SizedBox(
+        width: leadingWidth,
+        child: Text(successCountString, textAlign: TextAlign.center),
+      ),
+      title: Row(
+        children: [
+          Icon(config.icon, size: 32),
+          SizedBox(width: 16),
+          Text(config.title),
+        ],
+      ),
+      onTap: () => _practiceSession(context, config),
+      trailing: isEditMode ? editButtons : null,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer2<SessionsProvider, SettingsProvider>(
       builder: (context, sessions, settings, child) {
+        final isEditMode = settings.isEditMode;
+        final appLanguage = Localizations.localeOf(context).languageCode;
         return Scaffold(
           appBar: AppBar(
             centerTitle: true,
             actions: [
               IconButton(
-                icon: Icon(settings.isEditMode ? Icons.check : Icons.settings),
-                tooltip:
-                    settings.isEditMode ? 'Done Editing' : 'Manage Sessions',
-                onPressed: () => settings.isEditMode = !settings.isEditMode,
+                icon: Icon(isEditMode ? Icons.check : Icons.settings),
+                tooltip: isEditMode ? 'Done Editing' : 'Manage Sessions',
+                onPressed: () => settings.isEditMode = !isEditMode,
               ),
               IconButton(
                 icon: const Icon(Icons.info_outline),
@@ -97,80 +171,54 @@ class HomePage extends StatelessWidget {
 
           body: Center(
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 600.0),
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount:
-                    sessions.configs.length + (settings.isEditMode ? 1 : 0),
-                itemBuilder: (context, index) {
-                  if (index == sessions.configs.length) {
-                    return ListTile(
-                      dense: true,
-                      visualDensity: VisualDensity(vertical: 4),
-                      trailing: SizedBox(
-                        width: 100,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.add, color: Colors.green),
-                              onPressed: () => _editSession(context, null),
-                              tooltip: 'Add New Session',
-                            ),
-                          ],
-                        ),
+              constraints: const BoxConstraints(maxWidth: 600),
+              child: Column(
+                children: [
+                  Expanded(
+                    child: Center(
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        itemCount:
+                            sessions.configs.length + (isEditMode ? 2 : 1),
+                        itemBuilder: (context, index) {
+                          return _buildItem(
+                            context,
+                            index,
+                            sessions.configs,
+                            isEditMode,
+                          );
+                        },
                       ),
-                    );
-                  }
-
-                  final config = sessions.configs[index];
-                  final successRate =
-                      config.practicedTests > 0
-                          ? (config.successfulTests /
-                              config.practicedTests *
-                              100.0)
-                          : 100.0;
-
-                  return ListTile(
-                    dense: true,
-                    visualDensity: VisualDensity(vertical: 4),
-                    leading: Icon(config.icon, size: 32),
-                    title: Text(config.title),
-                    subtitle: Text(
-                      'Practiced ${config.practicedTests} times, ${successRate.toStringAsFixed(1)}% correct',
                     ),
-                    onTap: () => _practiceSession(context, config),
-                    trailing:
-                        settings.isEditMode
-                            ? SizedBox(
-                              width: 100,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  IconButton(
-                                    icon: const Icon(Icons.edit),
-                                    tooltip: 'Edit Session',
-                                    onPressed: () {
-                                      _editSession(context, config);
-                                    },
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child:
+                        isEditMode
+                            ? SegmentedButton<String>(
+                              segments: [
+                                ...NoteLocalizations.supportedLanguages.map(
+                                  (language) => ButtonSegment<String>(
+                                    value: language,
+                                    label: Text(language),
                                   ),
-                                  IconButton(
-                                    icon: const Icon(
-                                      Icons.delete,
-                                      color: Colors.red,
-                                    ),
-                                    tooltip: 'Delete Session',
-                                    onPressed:
-                                        () => _confirmDelete(context, config),
-                                  ),
-                                ],
-                              ),
+                                ),
+                              ],
+                              emptySelectionAllowed: true,
+                              showSelectedIcon: settings.language != null,
+                              selected: {settings.language ?? appLanguage},
+                              onSelectionChanged: (selection) {
+                                settings.language =
+                                    selection.isNotEmpty
+                                        ? selection.first
+                                        : settings.language == null
+                                        ? appLanguage
+                                        : null;
+                              },
                             )
-                            : null,
-                  );
-                },
+                            : SizedBox(height: 80),
+                  ),
+                ],
               ),
             ),
           ),

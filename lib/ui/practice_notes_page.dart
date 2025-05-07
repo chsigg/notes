@@ -44,7 +44,7 @@ class _PracticeNotesPageState extends State<PracticeNotesPage> {
   }
 
   void _addQuestions() {
-    _keyQueue.addAll(_shuffled([...widget.config.keys]));
+    _keyQueue.addAll([...widget.config.keys]..shuffle(_random));
     _goToNextQuestion();
   }
 
@@ -61,7 +61,7 @@ class _PracticeNotesPageState extends State<PracticeNotesPage> {
     // Show the requested number of leading elements in random order.
     final selectedNotes = _shuffled([...widget.config.notes]);
     final choices = <Note>{getNoteFromKey(questionKey)};
-    isPreferredNote(note) => note.accidental == questionKey.accidental;
+    bool isPreferredNote(note) => note.accidental == questionKey.accidental;
     choices.addAll(selectedNotes.where(isPreferredNote));
     choices.addAll(selectedNotes);
     if (choices.length < widget.config.numChoices) {
@@ -140,31 +140,31 @@ class _PracticeNotesPageState extends State<PracticeNotesPage> {
             // --- Wrap of Answer Buttons ---
             Wrap(
               alignment: WrapAlignment.center,
-              children:
-                  _answerNotes.map((note) {
-                    Color? buttonColor;
-                    if (_correctNote == note) {
-                      buttonColor = Colors.green[400];
-                    } else if (_incorrectNotes.contains(note)) {
-                      buttonColor = Colors.red[400];
-                    }
-                    return Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: ElevatedButton(
-                        onPressed: () => _handleAnswerTap(note),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: buttonColor,
-                          textStyle: const TextStyle(fontSize: 48),
-                        ),
-                        child: Text(
-                          Localizations.of(
-                            context,
-                            NoteLocalizations,
-                          ).name(note),
-                        ),
+              children: [
+                ..._answerNotes.map((note) {
+                  Color? buttonColor;
+                  if (_correctNote == note) {
+                    buttonColor = Colors.green[400];
+                  } else if (_incorrectNotes.contains(note)) {
+                    buttonColor = Colors.red[400];
+                  }
+                  return Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: ElevatedButton(
+                      onPressed: () => _handleAnswerTap(note),
+                      clipBehavior: Clip.hardEdge,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: buttonColor,
+                        textStyle: const TextStyle(fontSize: 48),
+                        minimumSize: const Size(100, 100),
                       ),
-                    );
-                  }).toList(),
+                      child: Text(
+                        Localizations.of(context, NoteLocalizations).name(note),
+                      ),
+                    ),
+                  );
+                }),
+              ],
             ),
           ],
         ),

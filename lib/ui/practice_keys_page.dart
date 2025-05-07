@@ -61,13 +61,13 @@ class _PracticeKeysPageState extends State<PracticeKeysPage> {
     // Show the requested number of leading elements in random order.
     final allKeys = _shuffled(getAllKeys());
     final selectedKeys = _shuffled([...widget.config.keys]);
-    isCorrectKey(key) => getNoteFromKey(key) == questionNote;
+    bool isCorrectKey(key) => getNoteFromKey(key) == questionNote;
     final correctKey = selectedKeys.firstWhere(
       isCorrectKey,
       orElse: () => allKeys.firstWhere(isCorrectKey),
     );
     final choices = <NoteKey>{correctKey};
-    isPreferredKey(key) => key.accidental == questionNote.accidental;
+    bool isPreferredKey(key) => key.accidental == questionNote.accidental;
     choices.addAll(selectedKeys.where(isPreferredKey));
     choices.addAll(selectedKeys);
     if (choices.length < widget.config.numChoices) {
@@ -142,29 +142,32 @@ class _PracticeKeysPageState extends State<PracticeKeysPage> {
             // --- Wrap of Answer Buttons ---
             Wrap(
               alignment: WrapAlignment.center,
-              children:
-                  _answerKeys.map((choice) {
-                    Color? buttonColor;
-                    if (_correctKey == choice) {
-                      buttonColor = Colors.green[400];
-                    } else if (_incorrectKeys.contains(choice)) {
-                      buttonColor = Colors.red[400];
-                    }
-                    return Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: ElevatedButton(
-                        onPressed: () => _handleAnswerTap(choice),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: buttonColor,
-                          textStyle: const TextStyle(
-                            fontSize: 32,
-                            fontFamily: 'StaffClefPitches',
-                          ),
+              children: [
+                ..._answerKeys.map((choice) {
+                  Color? buttonColor;
+                  if (_correctKey == choice) {
+                    buttonColor = Colors.green[400];
+                  } else if (_incorrectKeys.contains(choice)) {
+                    buttonColor = Colors.red[400];
+                  }
+                  return Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: ElevatedButton(
+                      onPressed: () => _handleAnswerTap(choice),
+                      clipBehavior: Clip.hardEdge,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: buttonColor,
+                        textStyle: const TextStyle(
+                          fontSize: 32,
+                          fontFamily: 'StaffClefPitches',
                         ),
-                        child: Text(getGlyphsFromKey(choice)),
+                        minimumSize: const Size(100, 100),
                       ),
-                    );
-                  }).toList(),
+                      child: Text(getGlyphsFromKey(choice)),
+                    ),
+                  );
+                }),
+              ],
             ),
           ],
         ),

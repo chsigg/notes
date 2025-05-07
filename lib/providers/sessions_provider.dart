@@ -23,10 +23,11 @@ class SessionsProvider with ChangeNotifier {
         throw Exception("Couldn't load configs from prefs");
       }
       final jsonList = jsonDecode(jsonString) as List<dynamic>;
-      _configs =
-          jsonList.map((json) {
-            return SessionConfig.fromJson(json as Map<String, dynamic>);
-          }).toList();
+      _configs = [
+        ...jsonList.map((json) {
+          return SessionConfig.fromJson(json as Map<String, dynamic>);
+        }),
+      ];
       if (_configs.isEmpty) {
         throw Exception('Loaded configs are empty');
       }

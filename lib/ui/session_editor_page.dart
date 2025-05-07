@@ -17,7 +17,7 @@ class SessionEditorPage extends StatefulWidget {
             id: const Uuid().v4(),
             title: 'New Session',
             icon: Icons.music_note,
-            type: SessionType.keys,
+            type: SessionType.notes,
             keys: const [],
             notes: const [],
           ),
@@ -64,8 +64,8 @@ class _SessionEditorPageState extends State<SessionEditorPage> {
         title: _titleController.text.trim(),
         icon: _selectedIconData,
         type: _selectedType,
-        keys: _selectedKeys.toList(),
-        notes: _selectedNotes.toList(),
+        keys: [..._selectedKeys],
+        notes: [..._selectedNotes],
         timeLimitSeconds: int.tryParse(_timeLimitController.text) ?? 0,
         practicedTests: widget.config.practicedTests,
         successfulTests: widget.config.successfulTests,
@@ -90,18 +90,19 @@ class _SessionEditorPageState extends State<SessionEditorPage> {
   }
 
   Widget _buildIconPickerDialog(BuildContext context, IconData currentIcon) {
-    final List<Widget> iconWidgets =
-        SessionIcons.allIcons.map((iconData) {
-          return InkWell(
-            onTap: () {
-              Navigator.of(context).pop(iconData);
-            },
-            child: Padding(
-              padding: const EdgeInsets.all(8),
-              child: Icon(iconData, size: 48),
-            ),
-          );
-        }).toList();
+    final iconWidgets = [
+      ...SessionIcons.allIcons.map((iconData) {
+        return InkWell(
+          onTap: () {
+            Navigator.of(context).pop(iconData);
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(8),
+            child: Icon(iconData, size: 48),
+          ),
+        );
+      }),
+    ];
 
     return AlertDialog(
       title: const Text('Select Icon'),
@@ -251,7 +252,8 @@ class _SessionEditorPageState extends State<SessionEditorPage> {
           ),
         ],
       ),
-      body: Center(
+      body: Align(
+        alignment: Alignment.topCenter,
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 600),
           child: SingleChildScrollView(
@@ -321,6 +323,7 @@ class _SessionEditorPageState extends State<SessionEditorPage> {
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
                           hintText: 'Set Time Limit',
+                          suffixText: 'sec',
                         ),
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {

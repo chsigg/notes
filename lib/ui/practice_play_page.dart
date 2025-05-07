@@ -56,7 +56,14 @@ class _PracticePlayPageState extends State<PracticePlayPage>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    _handleAppLifecycleState(state);
+    switch (state) {
+      case AppLifecycleState.paused:
+        _stopAudioRecording();
+      case AppLifecycleState.resumed:
+        _startAudioRecording();
+      default:
+        break;
+    }
   }
 
   @override
@@ -103,15 +110,15 @@ class _PracticePlayPageState extends State<PracticePlayPage>
             if (_answerTimer.isActive) {
               return Stream.empty();
             }
-            detectPitch(chunk) async {
-              final pitchDetector = PitchDetector(
-                audioSampleRate: _sampleRate * 1.0,
-                bufferSize: _bufferSize,
-              );
-              return pitchDetector.getPitchFromIntBuffer(chunk);
-            }
-
-            return Stream.fromFuture(compute(detectPitch, chunk));
+            return Stream.fromFuture(
+              compute((chunk) async {
+                final pitchDetector = PitchDetector(
+                  audioSampleRate: _sampleRate * 1.0,
+                  bufferSize: _bufferSize,
+                );
+                return pitchDetector.getPitchFromIntBuffer(chunk);
+              }, chunk),
+            );
           })
           .expand((result) {
             if (result.probability < 0.5) {
@@ -146,17 +153,6 @@ class _PracticePlayPageState extends State<PracticePlayPage>
     await _pitchSubscription?.cancel();
     _pitchSubscription = null;
     return _audioRecorder.cancel();
-  }
-
-  Future<void> _handleAppLifecycleState(AppLifecycleState state) async {
-    switch (state) {
-      case AppLifecycleState.paused:
-        return _stopAudioRecording();
-      case AppLifecycleState.resumed:
-        return _startAudioRecording();
-      default:
-        return Future.value();
-    }
   }
 
   void _addQuestions() {
@@ -217,7 +213,7 @@ class _PracticePlayPageState extends State<PracticePlayPage>
     final statusWidget = () {
       final color = isCorrect ? Colors.green[400] : Colors.red[400];
       if (isTuning) {
-        var tune = exp(ln2 / 12 * semitonesOffset) * targetPitch;
+        final tune = exp(ln2 / 12 * semitonesOffset) * targetPitch;
         return SizedBox(
           height: 32,
           child: Text(

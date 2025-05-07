@@ -24,6 +24,7 @@ class SettingsProvider with ChangeNotifier {
   }
 
   bool get isEditMode => _isEditMode;
+  String? get language => _language;
 
   set isEditMode(bool value) {
     _isEditMode = value;
@@ -31,9 +32,7 @@ class SettingsProvider with ChangeNotifier {
     _saveSettings();
   }
 
-  Locale? get locale => _language != null ? Locale(_language!) : null;
-
-  set language(String language) {
+  set language(String? language) {
     _language = language;
     notifyListeners();
     _saveSettings();
