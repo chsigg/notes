@@ -30,7 +30,7 @@ class _PracticePlayPageState extends State<PracticePlayPage>
   TimerWidget? _timerWidget;
   Timer _answerTimer = Timer(Duration.zero, () {});
 
-  late String _questionNote;
+  late Note _questionNote;
   double? _aPitch;
 
   Widget? _statusWidget;
@@ -39,7 +39,7 @@ class _PracticePlayPageState extends State<PracticePlayPage>
   StreamSubscription<double>? _pitchSubscription;
 
   final _audioRecorder = AudioRecorder();
-  final _notesQueue = Queue<String>();
+  final _notesQueue = Queue<Note>();
   final Random _random = Random();
 
   static const int _sampleRate = 44100;
@@ -161,7 +161,7 @@ class _PracticePlayPageState extends State<PracticePlayPage>
 
   void _addQuestions() {
     if (_aPitch == null) {
-      _notesQueue.add('A');
+      _notesQueue.add(Note(NaturalNote.A, Accidental.natural));
     }
     _notesQueue.addAll(_shuffled([...widget.config.notes]));
     _goToNextQuestion();
@@ -185,7 +185,7 @@ class _PracticePlayPageState extends State<PracticePlayPage>
     });
   }
 
-  List<String> _shuffled(List<String> list) {
+  List<T> _shuffled<T>(List<T> list) {
     list.shuffle(_random);
     return list;
   }
@@ -202,7 +202,7 @@ class _PracticePlayPageState extends State<PracticePlayPage>
     }
     final targetPitch = _aPitch ?? 440.0;
     final playedInteger = 9 + 12 / ln2 * log(pitch / targetPitch);
-    final targetInteger = NoteMapping.getIntegerFromNote(_questionNote);
+    final targetInteger = getIntegerFromNote(_questionNote);
     var semitonesOffset = playedInteger % 12 - targetInteger;
     if (semitonesOffset > 6) {
       semitonesOffset -= 12;
@@ -257,7 +257,7 @@ class _PracticePlayPageState extends State<PracticePlayPage>
           children: [
             // --- The Question Display ---
             Text(
-              NoteMapping.getNameFromNote(_questionNote),
+              Localizations.of(context, NoteLocalizations).name(_questionNote),
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 72),
             ),

@@ -2,293 +2,409 @@
 
 import 'dart:collection';
 
-class NoteMapping {
-  // This map defines the mapping from note key (String, e.g. 'tC4')
-  // to the glyphs in the 'StaffClefPitches' font (String).
-  static final Map<String, String> _glyphsMap =
-      LinkedHashMap<String, String>.from({
-        'tC3': '&=z=|',
-        'tD3': '&=x=|',
-        'tE3': '&=c=|',
-        'tF3': '&=v=|',
-        'tG3': '&=b=|',
-        'tA3': '&=n=|',
-        'tB3': '&=m=|',
-        'tC4': '&=a=|',
-        'tD4': '&=s=|',
-        'tE4': '&=d=|',
-        'tF4': '&=f=|',
-        'tG4': '&=g=|',
-        'tA4': '&=h=|',
-        'tB4': '&=j=|',
-        'tC5': '&=q=|',
-        'tD5': '&=w=|',
-        'tE5': '&=e=|',
-        'tF5': '&=r=|',
-        'tG5': '&=t=|',
-        'tA5': '&=y=|',
-        'tB5': '&=u=|',
-        'tC6': '&=1=|',
-        'tD6': '&=2=|',
-        'tE6': '&=3=|',
-        'tF6': '&=4=|',
-        'tG6': '&=5=|',
-        'tA6': '&=6=|',
-        'tB6': '&=7=|',
+import 'package:flutter/widgets.dart';
 
-        'tCb3': '&=\u03A9=|',
-        'tDb3': '&=\u2248=|',
-        'tEb3': '&=\u00E7=|',
-        'tFb3': '&=\u221A=|',
-        'tGb3': '&=\u222B=|',
-        'tAb3': '&=\u02DC=|',
-        'tBb3': '&=\u00B5=|',
-        'tCb4': '&=\u00E5=|',
-        'tDb4': '&=\u00DF=|',
-        'tEb4': '&=\u2202=|',
-        'tFb4': '&=\u0192=|',
-        'tGb4': '&=\u00A9=|',
-        'tAb4': '&=\u02D9=|',
-        'tBb4': '&=\u0394=|',
-        'tCb5': '&=\u0153=|',
-        'tDb5': '&=\u2211=|',
-        'tEb5': '&=\u00B4=|',
-        'tFb5': '&=\u00AE=|',
-        'tGb5': '&=\u2020=|',
-        'tAb5': '&=\u00A5=|',
-        'tBb5': '&=\u00A8=|',
-        'tCb6': '&=\u00A1=|',
-        'tDb6': '&=\u2122=|',
-        'tEb6': '&=\u00A3=|',
-        'tFb6': '&=\u00A2=|',
-        'tGb6': '&=\u221E=|',
-        'tAb6': '&=\u00A7=|',
-        'tBb6': '&=\u00B6=|',
+enum Clef {
+  treble,
+  bass;
 
-        'tC#3': '&=Z=|',
-        'tD#3': '&=X=|',
-        'tE#3': '&=C=|',
-        'tF#3': '&=V=|',
-        'tG#3': '&=B=|',
-        'tA#3': '&=N=|',
-        'tB#3': '&=M=|',
-        'tC#4': '&=A=|',
-        'tD#4': '&=S=|',
-        'tE#4': '&=D=|',
-        'tF#4': '&=F=|',
-        'tG#4': '&=G=|',
-        'tA#4': '&=H=|',
-        'tB#4': '&=J=|',
-        'tC#5': '&=Q=|',
-        'tD#5': '&=W=|',
-        'tE#5': '&=E=|',
-        'tF#5': '&=R=|',
-        'tG#5': '&=T=|',
-        'tA#5': '&=Y=|',
-        'tB#5': '&=U=|',
-        'tC#6': '&=!=|',
-        'tD#6': '&=@=|',
-        'tE#6': '&=#=|',
-        'tF#6': '&=\$=|',
-        'tG#6': '&=%=|',
-        'tA#6': '&=^=|',
-
-        'bE1': '?=z=|',
-        'bF1': '?=x=|',
-        'bG1': '?=c=|',
-        'bA1': '?=v=|',
-        'bB1': '?=b=|',
-        'bC2': '?=n=|',
-        'bD2': '?=m=|',
-        'bE2': '?=a=|',
-        'bF2': '?=s=|',
-        'bG2': '?=d=|',
-        'bA2': '?=f=|',
-        'bB2': '?=g=|',
-        'bC3': '?=h=|',
-        'bD3': '?=j=|',
-        'bE3': '?=q=|',
-        'bF3': '?=w=|',
-        'bG3': '?=e=|',
-        'bA3': '?=r=|',
-        'bB3': '?=t=|',
-        'bC4': '?=y=|',
-        'bD4': '?=u=|',
-        'bE4': '?=1=|',
-        'bF4': '?=2=|',
-        'bG4': '?=3=|',
-        'bA4': '?=4=|',
-        'bB4': '?=5=|',
-        'bC5': '?=6=|',
-        'bD5': '?=7=|',
-
-        'bEb1': '?=\u03A9=|',
-        'bFb1': '?=\u2248=|',
-        'bGb1': '?=\u00E7=|',
-        'bAb1': '?=\u221A=|',
-        'bBb1': '?=\u222B=|',
-        'bCb2': '?=\u02DC=|',
-        'bDb2': '?=\u00B5=|',
-        'bEb2': '?=\u00E5=|',
-        'bFb2': '?=\u00DF=|',
-        'bGb2': '?=\u2202=|',
-        'bAb2': '?=\u0192=|',
-        'bBb2': '?=\u00A9=|',
-        'bCb3': '?=\u02D9=|',
-        'bDb3': '?=\u0394=|',
-        'bEb3': '?=\u0153=|',
-        'bFb3': '?=\u2211=|',
-        'bGb3': '?=\u00B4=|',
-        'bAb3': '?=\u00AE=|',
-        'bBb3': '?=\u2020=|',
-        'bCb4': '?=\u00A5=|',
-        'bDb4': '?=\u00A8=|',
-        'bEb4': '?=\u00A1=|',
-        'bFb4': '?=\u2122=|',
-        'bGb4': '?=\u00A3=|',
-        'bAb4': '?=\u00A2=|',
-        'bBb4': '?=\u221E=|',
-        'bCb5': '?=\u00A7=|',
-        'bDb5': '?=\u00B6=|',
-
-        'bE#1': '?=Z=|',
-        'bF#1': '?=X=|',
-        'bG#1': '?=C=|',
-        'bA#1': '?=V=|',
-        'bB#1': '?=B=|',
-        'bC#2': '?=N=|',
-        'bD#2': '?=M=|',
-        'bE#2': '?=A=|',
-        'bF#2': '?=S=|',
-        'bG#2': '?=D=|',
-        'bA#2': '?=F=|',
-        'bB#2': '?=G=|',
-        'bC#3': '?=H=|',
-        'bD#3': '?=J=|',
-        'bE#3': '?=Q=|',
-        'bF#3': '?=W=|',
-        'bG#3': '?=E=|',
-        'bA#3': '?=R=|',
-        'bB#3': '?=T=|',
-        'bC#4': '?=Y=|',
-        'bD#4': '?=U=|',
-        'bE#4': '?=!=|',
-        'bF#4': '?=@=|',
-        'bG#4': '?=#=|',
-        'bA#4': '?=\$=|',
-        'bB#4': '?=%=|',
-        'bC#5': '?=^=|',
-      });
-
-  // This map defines the mapping from note (String, e.g. 'C')
-  // to the their German name (String).
-  static final Map<String, String> _noteToNameMap =
-      LinkedHashMap<String, String>.from({
-        'A': 'A',
-        'B': 'H',
-        'C': 'C',
-        'D': 'D',
-        'E': 'E',
-        'F': 'F',
-        'G': 'G',
-
-        'Ab': 'As',
-        'Bb': 'B',
-        'Cb': 'Ces',
-        'Db': 'Des',
-        'Eb': 'Es',
-        'Fb': 'Fes',
-        'Gb': 'Ges',
-
-        'A#': 'Ais',
-        'B#': 'His',
-        'C#': 'Cis',
-        'D#': 'Dis',
-        'E#': 'Eis',
-        'F#': 'Fis',
-        'G#': 'Gis',
-      });
-
-  // Gets the glyphs for a given note.
-  static String getGlyphsFromKey(String key) {
-    // Look up the character, providing a fallback if the key doesn't exist.
-    return _glyphsMap[key] ?? '+';
+  factory Clef.fromString(String str) {
+    return {'𝄞': Clef.treble, '𝄢': Clef.bass}[str]!;
   }
+}
 
-  // Gets the note for a given key.
-  static String getNoteFromKey(String key) {
-    assert(key.length >= 3, 'Invalid key: $key');
-    return key.substring(1, key.length - 1);
+enum NaturalNote {
+  C,
+  D,
+  E,
+  F,
+  G,
+  A,
+  B;
+
+  factory NaturalNote.fromString(String str) {
+    return NaturalNote.values.asNameMap()[str]!;
   }
+}
 
-  static String getNameFromNote(String note) {
-    return _noteToNameMap[note] ?? note;
+enum Accidental {
+  natural,
+  sharp,
+  flat;
+
+  factory Accidental.fromString(String str) {
+    return {
+      '': Accidental.natural,
+      '♯': Accidental.sharp,
+      '♭': Accidental.flat,
+    }[str]!;
   }
+}
 
-  // Returns the value of a note in integer notation.
-  static int getIntegerFromNote(String name) {
-    switch (_noteToNameMap.entries
-        .firstWhere((entry) => entry.value == name)
-        .key) {
-      case 'A':
-        return 9;
-      case 'A#':
-      case 'Bb':
-        return 10;
-      case 'B':
-      case 'Cb':
-        return 11;
-      case 'B#':
-      case 'C':
-        return 0;
-      case 'C#':
-      case 'Db':
-        return 1;
-      case 'D':
-        return 2;
-      case 'D#':
-      case 'Eb':
-        return 3;
-      case 'E':
-      case 'Fb':
-        return 4;
-      case 'E#':
-      case 'F':
-        return 5;
-      case 'F#':
-      case 'Gb':
-        return 6;
-      case 'G':
-        return 7;
-      case 'G#':
-      case 'Ab':
-        return 8;
-      default:
-        throw Exception('Invalid note: $name');
-    }
-  }
+class Note {
+  final NaturalNote note;
+  final Accidental accidental;
 
-  static List<String> getAllNotes() {
-    return [..._noteToNameMap.keys];
-  }
+  const Note(this.note, this.accidental);
 
-  static Iterable<String> getSameAccidentalKeys(String note) {
-    if (note.length < 3) throw Exception('Invalid note: $note');
-    getAccidental(note) => note.substring(2, note.length - 1);
-    return _glyphsMap.keys.where(
-      (key) => getAccidental(key) == getAccidental(note),
+  factory Note.fromString(String str) {
+    final chars = Characters(str);
+    return Note(
+      NaturalNote.fromString(chars.elementAt(0)),
+      Accidental.fromString(chars.skip(1).string),
     );
   }
 
-  static List<String> getAllKeys() {
-    return [..._glyphsMap.keys];
+  @override
+  bool operator ==(Object other) {
+    if (other is Note) {
+      return note == other.note && accidental == other.accidental;
+    }
+    return false;
   }
 
-  static List<String> getAllTrebleKeys() {
-    return [..._glyphsMap.keys.where((key) => key.startsWith('t'))];
+  @override
+  int get hashCode => note.hashCode ^ accidental.hashCode;
+}
+
+class NoteKey {
+  final Clef clef;
+  final NaturalNote note;
+  final int octave;
+  final Accidental accidental;
+
+  const NoteKey(this.clef, this.note, this.octave, this.accidental);
+
+  factory NoteKey.fromString(String str) {
+    final chars = Characters(str);
+    return NoteKey(
+      Clef.fromString(chars.elementAt(0)),
+      NaturalNote.fromString(chars.elementAt(1)),
+      int.parse(chars.elementAt(2)),
+      Accidental.fromString(chars.skip(3).string),
+    );
   }
 
-  static List<String> getAllBaseKeys() {
-    return [..._glyphsMap.keys.where((key) => key.startsWith('b'))];
+  @override
+  bool operator ==(Object other) {
+    if (other is NoteKey) {
+      return clef == other.clef &&
+          note == other.note &&
+          octave == other.octave &&
+          accidental == other.accidental;
+    }
+    return false;
+  }
+
+  @override
+  int get hashCode =>
+      clef.hashCode ^ note.hashCode ^ octave.hashCode ^ accidental.hashCode;
+}
+
+List<Note> getAllNotes() {
+  return [..._noteToGermanNameMap.keys];
+}
+
+List<Note> getNaturalNotes() {
+  isNatural(note) => note.accidental == Accidental.natural;
+  return [..._noteToGermanNameMap.keys.where(isNatural)];
+}
+
+// Returns the value of a note in integer notation.
+int getIntegerFromNote(Note note) {
+  return _noteToIntegerMap[note]!;
+}
+
+List<NoteKey> getAllKeys() {
+  return [..._keyToGlyphsMap.keys];
+}
+
+List<NoteKey> getAllTrebleKeys() {
+  isTreble(key) => key.clef == Clef.treble;
+  return [..._keyToGlyphsMap.keys.where(isTreble)];
+}
+
+List<NoteKey> getAllBassKeys() {
+  isBass(key) => key.clef == Clef.treble;
+  return [..._keyToGlyphsMap.keys.where(isBass)];
+}
+
+// Gets the glyphs for a given note.
+String getGlyphsFromKey(NoteKey key) {
+  // Look up the character, providing a fallback if the key doesn't exist.
+  return _keyToGlyphsMap[key] ?? '+';
+}
+
+// Gets the note for a given key.
+Note getNoteFromKey(NoteKey key) {
+  return Note(key.note, key.accidental);
+}
+
+class NoteLocalizations {
+  static const List<Locale> supportedLocales = [
+    Locale('en'),
+    Locale('de'),
+    Locale('nl'),
+  ];
+
+  final Locale locale;
+
+  NoteLocalizations(this.locale);
+
+  String name(Note note) {
+    switch (locale.languageCode) {
+      case 'de':
+        return _noteToGermanNameMap[note]!;
+      case 'nl':
+        return _noteToGermanNameMap[note]!;
+      default:
+        return _noteToGermanNameMap[note]!;
+    }
   }
 }
+
+class NoteLocalizationsDelegate
+    extends LocalizationsDelegate<NoteLocalizations> {
+  const NoteLocalizationsDelegate();
+
+  @override
+  bool isSupported(Locale locale) =>
+      NoteLocalizations.supportedLocales.contains(Locale(locale.languageCode));
+
+  @override
+  Future<NoteLocalizations> load(Locale locale) {
+    return Future.value(NoteLocalizations(locale));
+  }
+
+  @override
+  bool shouldReload(NoteLocalizationsDelegate old) => false;
+}
+
+// This map defines the mapping from note to the German name (String).
+final _noteToGermanNameMap = LinkedHashMap<Note, String>.from({
+  Note.fromString('C'): 'C',
+  Note.fromString('D'): 'D',
+  Note.fromString('E'): 'E',
+  Note.fromString('F'): 'F',
+  Note.fromString('G'): 'G',
+  Note.fromString('A'): 'A',
+  Note.fromString('B'): 'H',
+
+  Note.fromString('C♭'): 'Ces',
+  Note.fromString('D♭'): 'Des',
+  Note.fromString('E♭'): 'Es',
+  Note.fromString('F♭'): 'Fes',
+  Note.fromString('G♭'): 'Ges',
+  Note.fromString('A♭'): 'As',
+  Note.fromString('B♭'): 'B',
+
+  Note.fromString('C♯'): 'Cis',
+  Note.fromString('D♯'): 'Dis',
+  Note.fromString('E♯'): 'Eis',
+  Note.fromString('F♯'): 'Fis',
+  Note.fromString('G♯'): 'Gis',
+  Note.fromString('A♯'): 'Ais',
+  Note.fromString('B♯'): 'His',
+});
+
+final _noteToIntegerMap = LinkedHashMap<Note, int>.from({
+  Note.fromString('C'): 0,
+  Note.fromString('D'): 2,
+  Note.fromString('E'): 4,
+  Note.fromString('F'): 5,
+  Note.fromString('G'): 7,
+  Note.fromString('A'): 9,
+  Note.fromString('B'): 11,
+
+  Note.fromString('C♭'): 11,
+  Note.fromString('D♭'): 1,
+  Note.fromString('E♭'): 3,
+  Note.fromString('F♭'): 4,
+  Note.fromString('G♭'): 6,
+  Note.fromString('A♭'): 8,
+  Note.fromString('B♭'): 10,
+
+  Note.fromString('C♯'): 1,
+  Note.fromString('D♯'): 3,
+  Note.fromString('E♯'): 5,
+  Note.fromString('F♯'): 6,
+  Note.fromString('G♯'): 8,
+  Note.fromString('A♯'): 10,
+  Note.fromString('B♯'): 0,
+});
+
+// This map defines the mapping from note key
+// to the glyphs in the 'StaffClefPitches' font.
+final _keyToGlyphsMap = LinkedHashMap<NoteKey, String>.from({
+  NoteKey.fromString('𝄞C3'): '&=z=|',
+  NoteKey.fromString('𝄞D3'): '&=x=|',
+  NoteKey.fromString('𝄞E3'): '&=c=|',
+  NoteKey.fromString('𝄞F3'): '&=v=|',
+  NoteKey.fromString('𝄞G3'): '&=b=|',
+  NoteKey.fromString('𝄞A3'): '&=n=|',
+  NoteKey.fromString('𝄞B3'): '&=m=|',
+  NoteKey.fromString('𝄞C4'): '&=a=|',
+  NoteKey.fromString('𝄞D4'): '&=s=|',
+  NoteKey.fromString('𝄞E4'): '&=d=|',
+  NoteKey.fromString('𝄞F4'): '&=f=|',
+  NoteKey.fromString('𝄞G4'): '&=g=|',
+  NoteKey.fromString('𝄞A4'): '&=h=|',
+  NoteKey.fromString('𝄞B4'): '&=j=|',
+  NoteKey.fromString('𝄞C5'): '&=q=|',
+  NoteKey.fromString('𝄞D5'): '&=w=|',
+  NoteKey.fromString('𝄞E5'): '&=e=|',
+  NoteKey.fromString('𝄞F5'): '&=r=|',
+  NoteKey.fromString('𝄞G5'): '&=t=|',
+  NoteKey.fromString('𝄞A5'): '&=y=|',
+  NoteKey.fromString('𝄞B5'): '&=u=|',
+  NoteKey.fromString('𝄞C6'): '&=1=|',
+  NoteKey.fromString('𝄞D6'): '&=2=|',
+  NoteKey.fromString('𝄞E6'): '&=3=|',
+  NoteKey.fromString('𝄞F6'): '&=4=|',
+  NoteKey.fromString('𝄞G6'): '&=5=|',
+  NoteKey.fromString('𝄞A6'): '&=6=|',
+  NoteKey.fromString('𝄞B6'): '&=7=|',
+
+  NoteKey.fromString('𝄞C3♭'): '&=\u03A9=|',
+  NoteKey.fromString('𝄞D3♭'): '&=\u2248=|',
+  NoteKey.fromString('𝄞E3♭'): '&=\u00E7=|',
+  NoteKey.fromString('𝄞F3♭'): '&=\u221A=|',
+  NoteKey.fromString('𝄞G3♭'): '&=\u222B=|',
+  NoteKey.fromString('𝄞A3♭'): '&=\u02DC=|',
+  NoteKey.fromString('𝄞B3♭'): '&=\u00B5=|',
+  NoteKey.fromString('𝄞C4♭'): '&=\u00E5=|',
+  NoteKey.fromString('𝄞D4♭'): '&=\u00DF=|',
+  NoteKey.fromString('𝄞E4♭'): '&=\u2202=|',
+  NoteKey.fromString('𝄞F4♭'): '&=\u0192=|',
+  NoteKey.fromString('𝄞G4♭'): '&=\u00A9=|',
+  NoteKey.fromString('𝄞A4♭'): '&=\u02D9=|',
+  NoteKey.fromString('𝄞B4♭'): '&=\u0394=|',
+  NoteKey.fromString('𝄞C5♭'): '&=\u0153=|',
+  NoteKey.fromString('𝄞D5♭'): '&=\u2211=|',
+  NoteKey.fromString('𝄞E5♭'): '&=\u00B4=|',
+  NoteKey.fromString('𝄞F5♭'): '&=\u00AE=|',
+  NoteKey.fromString('𝄞G5♭'): '&=\u2020=|',
+  NoteKey.fromString('𝄞A5♭'): '&=\u00A5=|',
+  NoteKey.fromString('𝄞B5♭'): '&=\u00A8=|',
+  NoteKey.fromString('𝄞C6♭'): '&=\u00A1=|',
+  NoteKey.fromString('𝄞D6♭'): '&=\u2122=|',
+  NoteKey.fromString('𝄞E6♭'): '&=\u00A3=|',
+  NoteKey.fromString('𝄞F6♭'): '&=\u00A2=|',
+  NoteKey.fromString('𝄞G6♭'): '&=\u221E=|',
+  NoteKey.fromString('𝄞A6♭'): '&=\u00A7=|',
+  NoteKey.fromString('𝄞B6♭'): '&=\u00B6=|',
+
+  NoteKey.fromString('𝄞C3♯'): '&=Z=|',
+  NoteKey.fromString('𝄞D3♯'): '&=X=|',
+  NoteKey.fromString('𝄞E3♯'): '&=C=|',
+  NoteKey.fromString('𝄞F3♯'): '&=V=|',
+  NoteKey.fromString('𝄞G3♯'): '&=B=|',
+  NoteKey.fromString('𝄞A3♯'): '&=N=|',
+  NoteKey.fromString('𝄞B3♯'): '&=M=|',
+  NoteKey.fromString('𝄞C4♯'): '&=A=|',
+  NoteKey.fromString('𝄞D4♯'): '&=S=|',
+  NoteKey.fromString('𝄞E4♯'): '&=D=|',
+  NoteKey.fromString('𝄞F4♯'): '&=F=|',
+  NoteKey.fromString('𝄞G4♯'): '&=G=|',
+  NoteKey.fromString('𝄞A4♯'): '&=H=|',
+  NoteKey.fromString('𝄞B4♯'): '&=J=|',
+  NoteKey.fromString('𝄞C5♯'): '&=Q=|',
+  NoteKey.fromString('𝄞D5♯'): '&=W=|',
+  NoteKey.fromString('𝄞E5♯'): '&=E=|',
+  NoteKey.fromString('𝄞F5♯'): '&=R=|',
+  NoteKey.fromString('𝄞G5♯'): '&=T=|',
+  NoteKey.fromString('𝄞A5♯'): '&=Y=|',
+  NoteKey.fromString('𝄞B5♯'): '&=U=|',
+  NoteKey.fromString('𝄞C6♯'): '&=!=|',
+  NoteKey.fromString('𝄞D6♯'): '&=@=|',
+  NoteKey.fromString('𝄞E6♯'): '&=#=|',
+  NoteKey.fromString('𝄞F6♯'): '&=\$=|',
+  NoteKey.fromString('𝄞G6♯'): '&=%=|',
+  NoteKey.fromString('𝄞A6♯'): '&=^=|',
+
+  NoteKey.fromString('𝄢E1'): '?=z=|',
+  NoteKey.fromString('𝄢F1'): '?=x=|',
+  NoteKey.fromString('𝄢G1'): '?=c=|',
+  NoteKey.fromString('𝄢A1'): '?=v=|',
+  NoteKey.fromString('𝄢B1'): '?=b=|',
+  NoteKey.fromString('𝄢C2'): '?=n=|',
+  NoteKey.fromString('𝄢D2'): '?=m=|',
+  NoteKey.fromString('𝄢E2'): '?=a=|',
+  NoteKey.fromString('𝄢F2'): '?=s=|',
+  NoteKey.fromString('𝄢G2'): '?=d=|',
+  NoteKey.fromString('𝄢A2'): '?=f=|',
+  NoteKey.fromString('𝄢B2'): '?=g=|',
+  NoteKey.fromString('𝄢C3'): '?=h=|',
+  NoteKey.fromString('𝄢D3'): '?=j=|',
+  NoteKey.fromString('𝄢E3'): '?=q=|',
+  NoteKey.fromString('𝄢F3'): '?=w=|',
+  NoteKey.fromString('𝄢G3'): '?=e=|',
+  NoteKey.fromString('𝄢A3'): '?=r=|',
+  NoteKey.fromString('𝄢B3'): '?=t=|',
+  NoteKey.fromString('𝄢C4'): '?=y=|',
+  NoteKey.fromString('𝄢D4'): '?=u=|',
+  NoteKey.fromString('𝄢E4'): '?=1=|',
+  NoteKey.fromString('𝄢F4'): '?=2=|',
+  NoteKey.fromString('𝄢G4'): '?=3=|',
+  NoteKey.fromString('𝄢A4'): '?=4=|',
+  NoteKey.fromString('𝄢B4'): '?=5=|',
+  NoteKey.fromString('𝄢C5'): '?=6=|',
+  NoteKey.fromString('𝄢D5'): '?=7=|',
+
+  NoteKey.fromString('𝄢E1♭'): '?=\u03A9=|',
+  NoteKey.fromString('𝄢F1♭'): '?=\u2248=|',
+  NoteKey.fromString('𝄢G1♭'): '?=\u00E7=|',
+  NoteKey.fromString('𝄢A1♭'): '?=\u221A=|',
+  NoteKey.fromString('𝄢B1♭'): '?=\u222B=|',
+  NoteKey.fromString('𝄢C2♭'): '?=\u02DC=|',
+  NoteKey.fromString('𝄢D2♭'): '?=\u00B5=|',
+  NoteKey.fromString('𝄢E2♭'): '?=\u00E5=|',
+  NoteKey.fromString('𝄢F2♭'): '?=\u00DF=|',
+  NoteKey.fromString('𝄢G2♭'): '?=\u2202=|',
+  NoteKey.fromString('𝄢A2♭'): '?=\u0192=|',
+  NoteKey.fromString('𝄢B2♭'): '?=\u00A9=|',
+  NoteKey.fromString('𝄢C3♭'): '?=\u02D9=|',
+  NoteKey.fromString('𝄢D3♭'): '?=\u0394=|',
+  NoteKey.fromString('𝄢E3♭'): '?=\u0153=|',
+  NoteKey.fromString('𝄢F3♭'): '?=\u2211=|',
+  NoteKey.fromString('𝄢G3♭'): '?=\u00B4=|',
+  NoteKey.fromString('𝄢A3♭'): '?=\u00AE=|',
+  NoteKey.fromString('𝄢B3♭'): '?=\u2020=|',
+  NoteKey.fromString('𝄢C4♭'): '?=\u00A5=|',
+  NoteKey.fromString('𝄢D4♭'): '?=\u00A8=|',
+  NoteKey.fromString('𝄢E4♭'): '?=\u00A1=|',
+  NoteKey.fromString('𝄢F4♭'): '?=\u2122=|',
+  NoteKey.fromString('𝄢G4♭'): '?=\u00A3=|',
+  NoteKey.fromString('𝄢A4♭'): '?=\u00A2=|',
+  NoteKey.fromString('𝄢B4♭'): '?=\u221E=|',
+  NoteKey.fromString('𝄢C5♭'): '?=\u00A7=|',
+  NoteKey.fromString('𝄢D5♭'): '?=\u00B6=|',
+
+  NoteKey.fromString('𝄢E1♯'): '?=Z=|',
+  NoteKey.fromString('𝄢F1♯'): '?=X=|',
+  NoteKey.fromString('𝄢G1♯'): '?=C=|',
+  NoteKey.fromString('𝄢A1♯'): '?=V=|',
+  NoteKey.fromString('𝄢B1♯'): '?=B=|',
+  NoteKey.fromString('𝄢C2♯'): '?=N=|',
+  NoteKey.fromString('𝄢D2♯'): '?=M=|',
+  NoteKey.fromString('𝄢E2♯'): '?=A=|',
+  NoteKey.fromString('𝄢F2♯'): '?=S=|',
+  NoteKey.fromString('𝄢G2♯'): '?=D=|',
+  NoteKey.fromString('𝄢A2♯'): '?=F=|',
+  NoteKey.fromString('𝄢B2♯'): '?=G=|',
+  NoteKey.fromString('𝄢C3♯'): '?=H=|',
+  NoteKey.fromString('𝄢D3♯'): '?=J=|',
+  NoteKey.fromString('𝄢E3♯'): '?=Q=|',
+  NoteKey.fromString('𝄢F3♯'): '?=W=|',
+  NoteKey.fromString('𝄢G3♯'): '?=E=|',
+  NoteKey.fromString('𝄢A3♯'): '?=R=|',
+  NoteKey.fromString('𝄢B3♯'): '?=T=|',
+  NoteKey.fromString('𝄢C4♯'): '?=Y=|',
+  NoteKey.fromString('𝄢D4♯'): '?=U=|',
+  NoteKey.fromString('𝄢E4♯'): '?=!=|',
+  NoteKey.fromString('𝄢F4♯'): '?&=@=|',
+  NoteKey.fromString('𝄢G4♯'): '?&=#=|',
+  NoteKey.fromString('𝄢A4♯'): '?=\$=|',
+  NoteKey.fromString('𝄢B4♯'): '?&=%=|',
+  NoteKey.fromString('𝄢C5♯'): '?&=^=|',
+});

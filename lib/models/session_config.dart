@@ -15,9 +15,9 @@ class SessionConfig {
   IconData icon;
 
   SessionType type;
-  List<String> keys;
-  List<String> notes;
-  int numChoices;
+  List<NoteKey> keys;
+  List<Note> notes;
+  final int numChoices = 3;
   int timeLimitSeconds;
 
   int practicedTests;
@@ -30,7 +30,6 @@ class SessionConfig {
     required this.type,
     required this.keys,
     required this.notes,
-    this.numChoices = 3,
     this.timeLimitSeconds = 0,
     this.practicedTests = 0,
     this.successfulTests = 0,
@@ -42,9 +41,8 @@ class SessionConfig {
       title: json['title'] as String,
       icon: _iconFromJsonManual(json['icon'] as Map<String, dynamic>),
       type: _sessionTypeFromJsonManual(json['type'] as String),
-      keys: List<String>.from(json['keys'] as List),
-      notes: List<String>.from(json['notes'] as List),
-      numChoices: json['numChoices'] as int,
+      keys: List<NoteKey>.from(json['keys'] as List),
+      notes: List<Note>.from(json['notes'] as List),
       timeLimitSeconds: json['timeLimitSeconds'] as int,
       practicedTests: json['practicedTests'] as int,
       successfulTests: json['successfulTests'] as int,
@@ -59,7 +57,6 @@ class SessionConfig {
       'type': _sessionTypeToJsonManual(type),
       'keys': keys,
       'notes': notes,
-      'numChoices': numChoices,
       'timeLimitSeconds': timeLimitSeconds,
       'practicedTests': practicedTests,
       'successfulTests': successfulTests,
@@ -100,24 +97,24 @@ class SessionConfig {
         title: 'Treble Names',
         icon: SessionIcons.trebleIcon,
         type: SessionType.notes,
-        keys: NoteMapping.getAllTrebleKeys(),
-        notes: NoteMapping.getAllNotes(),
+        keys: getAllTrebleKeys(),
+        notes: getAllNotes(),
       ),
       SessionConfig(
         id: '2',
         title: 'Bass Names',
         icon: SessionIcons.bassIcon,
         type: SessionType.notes,
-        keys: NoteMapping.getAllBaseKeys(),
-        notes: NoteMapping.getAllNotes(),
+        keys: getAllBassKeys(),
+        notes: getAllNotes(),
       ),
       SessionConfig(
         id: '3',
         title: 'All Notes',
         icon: Icons.music_note,
         type: SessionType.keys,
-        keys: NoteMapping.getAllKeys(),
-        notes: NoteMapping.getAllNotes(),
+        keys: getAllKeys(),
+        notes: getAllNotes(),
       ),
       SessionConfig(
         id: '4',
@@ -125,7 +122,7 @@ class SessionConfig {
         icon: Icons.mic,
         type: SessionType.play,
         keys: [],
-        notes: [...NoteMapping.getAllNotes().take(7)],
+        notes: getNaturalNotes(),
       ),
     ];
   }

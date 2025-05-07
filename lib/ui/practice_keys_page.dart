@@ -23,12 +23,12 @@ class _PracticeKeysPageState extends State<PracticeKeysPage> {
   TimerWidget? _timerWidget;
   Timer? _nextQuestionTimer;
 
-  late String _questionNote;
-  late List<String> _answerKeys;
-  String? _correctKey;
-  Set<String> _incorrectKeys = {};
+  late Note _questionNote;
+  late List<NoteKey> _answerKeys;
+  NoteKey? _correctKey;
+  Set<NoteKey> _incorrectKeys = {};
 
-  final _noteQueue = Queue<String>();
+  final _noteQueue = Queue<Note>();
   final Random _random = Random();
 
   @override
@@ -52,26 +52,22 @@ class _PracticeKeysPageState extends State<PracticeKeysPage> {
     if (_noteQueue.isEmpty) {
       return _addQuestions();
     }
-    final note = _noteQueue.removeFirst();
+    final questionNote = _noteQueue.removeFirst();
     // Determine the list of choices by adding keys to a set in a specific
     // order: one correct answer, selected keys with the same accidental,
     // all selected keys, and finally all keys with the same accidental if the
     // user has selected less keys than the number of choices to display.
     // Elements are only included once in the set and have a stable order.
     // Show the requested number of leading elements in random order.
-    final allKeys = _shuffled(NoteMapping.getAllKeys());
+    final allKeys = _shuffled(getAllKeys());
     final selectedKeys = _shuffled([...widget.config.keys]);
-    isCorrectKey(key) => NoteMapping.getNoteFromKey(key) == note;
-    final choices = <String>{
-      selectedKeys.firstWhere(
-        isCorrectKey,
-        orElse: () => allKeys.firstWhere(isCorrectKey),
-      ),
-    };
-    final preferredKeys = <String>{
-      ...NoteMapping.getSameAccidentalKeys(choices.first),
-    };
-    isPreferredKey(key) => preferredKeys.contains(key);
+    isCorrectKey(key) => getNoteFromKey(key) == questionNote;
+    final correctKey = selectedKeys.firstWhere(
+      isCorrectKey,
+      orElse: () => allKeys.firstWhere(isCorrectKey),
+    );
+    final choices = <NoteKey>{correctKey};
+    isPreferredKey(key) => key.accidental == questionNote.accidental;
     choices.addAll(selectedKeys.where(isPreferredKey));
     choices.addAll(selectedKeys);
     if (choices.length < widget.config.numChoices) {
@@ -79,7 +75,7 @@ class _PracticeKeysPageState extends State<PracticeKeysPage> {
     }
 
     setState(() {
-      _questionNote = note;
+      _questionNote = questionNote;
       _answerKeys = _shuffled([...choices.take(widget.config.numChoices)]);
       _correctKey = null;
       _incorrectKeys = {};
@@ -93,7 +89,7 @@ class _PracticeKeysPageState extends State<PracticeKeysPage> {
     });
   }
 
-  List<String> _shuffled(List<String> list) {
+  List<T> _shuffled<T>(List<T> list) {
     list.shuffle(_random);
     return list;
   }
@@ -104,23 +100,23 @@ class _PracticeKeysPageState extends State<PracticeKeysPage> {
     _goToNextQuestion();
   }
 
-  void _handleAnswerTap(String chosenLabel) {
+  void _handleAnswerTap(NoteKey tappedKey) {
     if (_correctKey != null) {
       return;
     }
-    final isCorrect = NoteMapping.getNoteFromKey(chosenLabel) == _questionNote;
+    final isCorrect = getNoteFromKey(tappedKey) == _questionNote;
     Provider.of<SessionsProvider>(
       context,
       listen: false,
     ).incrementSessionStats(widget.config.id, isCorrect);
     if (isCorrect) {
-      setState(() => _correctKey = chosenLabel);
+      setState(() => _correctKey = tappedKey);
       _nextQuestionTimer = Timer(
         const Duration(milliseconds: 500),
         () => _goToNextQuestion(),
       );
     } else {
-      setState(() => _incorrectKeys.add(chosenLabel));
+      setState(() => _incorrectKeys.add(tappedKey));
     }
   }
 
@@ -138,7 +134,7 @@ class _PracticeKeysPageState extends State<PracticeKeysPage> {
           children: [
             // --- The Question Display ---
             Text(
-              NoteMapping.getNameFromNote(_questionNote),
+              Localizations.of(context, NoteLocalizations).name(_questionNote),
               textAlign: TextAlign.center,
               style: const TextStyle(fontSize: 72),
             ),
@@ -165,7 +161,7 @@ class _PracticeKeysPageState extends State<PracticeKeysPage> {
                             fontFamily: 'StaffClefPitches',
                           ),
                         ),
-                        child: Text(NoteMapping.getGlyphsFromKey(choice)),
+                        child: Text(getGlyphsFromKey(choice)),
                       ),
                     );
                   }).toList(),

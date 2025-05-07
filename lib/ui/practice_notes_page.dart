@@ -23,12 +23,12 @@ class _PracticeNotesPageState extends State<PracticeNotesPage> {
   TimerWidget? _timerWidget;
   Timer? _nextQuestionTimer;
 
-  late String _questionKey;
-  late List<String> _answerNotes;
-  String? _correctNote;
-  Set<String> _incorrectNotes = {};
+  late NoteKey _questionKey;
+  late List<Note> _answerNotes;
+  Note? _correctNote;
+  Set<Note> _incorrectNotes = {};
 
-  final _keyQueue = Queue<String>();
+  final _keyQueue = Queue<NoteKey>();
   final Random _random = Random();
 
   @override
@@ -52,7 +52,7 @@ class _PracticeNotesPageState extends State<PracticeNotesPage> {
     if (_keyQueue.isEmpty) {
       return _addQuestions();
     }
-    final key = _keyQueue.removeFirst();
+    final questionKey = _keyQueue.removeFirst();
     // Determine the list of choices by adding notes to a set in a specific
     // order: the correct answer, selected notes with the same accidental,
     // all selected notes, and finally all notes with the same accidental if the
@@ -60,20 +60,16 @@ class _PracticeNotesPageState extends State<PracticeNotesPage> {
     // Elements are only included once in the set and have a stable order.
     // Show the requested number of leading elements in random order.
     final selectedNotes = _shuffled([...widget.config.notes]);
-    final choices = <String>{NoteMapping.getNoteFromKey(key)};
-    final preferredKeys = NoteMapping.getSameAccidentalKeys(key);
-    final preferredNotes = <String>{
-      ...preferredKeys.map(NoteMapping.getNoteFromKey),
-    };
-    isPreferredNote(note) => preferredNotes.contains(note);
+    final choices = <Note>{getNoteFromKey(questionKey)};
+    isPreferredNote(note) => note.accidental == questionKey.accidental;
     choices.addAll(selectedNotes.where(isPreferredNote));
     choices.addAll(selectedNotes);
     if (choices.length < widget.config.numChoices) {
-      choices.addAll(_shuffled([...preferredNotes]));
+      choices.addAll(_shuffled(getAllNotes()).where(isPreferredNote));
     }
 
     setState(() {
-      _questionKey = key;
+      _questionKey = questionKey;
       _answerNotes = _shuffled([...choices.take(widget.config.numChoices)]);
       _correctNote = null;
       _incorrectNotes = {};
@@ -87,7 +83,7 @@ class _PracticeNotesPageState extends State<PracticeNotesPage> {
     });
   }
 
-  List<String> _shuffled(List<String> list) {
+  List<T> _shuffled<T>(List<T> list) {
     list.shuffle(_random);
     return list;
   }
@@ -98,21 +94,21 @@ class _PracticeNotesPageState extends State<PracticeNotesPage> {
     _goToNextQuestion();
   }
 
-  void _handleAnswerTap(String chosenNote) {
+  void _handleAnswerTap(Note tappedNote) {
     if (_correctNote != null) {
       return;
     }
-    final isCorrect = chosenNote == NoteMapping.getNoteFromKey(_questionKey);
+    final isCorrect = tappedNote == getNoteFromKey(_questionKey);
     final sessions = Provider.of<SessionsProvider>(context, listen: false);
     sessions.incrementSessionStats(widget.config.id, isCorrect);
     if (isCorrect) {
-      setState(() => _correctNote = chosenNote);
+      setState(() => _correctNote = tappedNote);
       _nextQuestionTimer = Timer(
         const Duration(milliseconds: 500),
         () => _goToNextQuestion(),
       );
     } else {
-      setState(() => _incorrectNotes.add(chosenNote));
+      setState(() => _incorrectNotes.add(tappedNote));
     }
   }
 
@@ -132,7 +128,7 @@ class _PracticeNotesPageState extends State<PracticeNotesPage> {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 48),
               child: Text(
-                NoteMapping.getGlyphsFromKey(_questionKey),
+                getGlyphsFromKey(_questionKey),
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   fontSize: 48,
@@ -160,7 +156,12 @@ class _PracticeNotesPageState extends State<PracticeNotesPage> {
                           backgroundColor: buttonColor,
                           textStyle: const TextStyle(fontSize: 48),
                         ),
-                        child: Text(NoteMapping.getNameFromNote(note)),
+                        child: Text(
+                          Localizations.of(
+                            context,
+                            NoteLocalizations,
+                          ).name(note),
+                        ),
                       ),
                     );
                   }).toList(),

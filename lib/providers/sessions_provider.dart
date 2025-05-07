@@ -7,7 +7,7 @@ import '../models/session_config.dart';
 
 class SessionsProvider with ChangeNotifier {
   List<SessionConfig> _configs = [];
-  static const _configsPrefKey = 'sessions_configs_v2';
+  static const _configsPrefKey = 'sessions_configs_v3';
 
   List<SessionConfig> get configs => _configs;
 

@@ -3,13 +3,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsProvider with ChangeNotifier {
   bool _isEditMode = false;
-  Locale _locale = const Locale('en'); // Default to English
+  String? _language;
+
   static const _isEditModePrefKey = 'is_edit_mode';
-  static const _localePrefKey = 'locale';
-
-  bool get isEditMode => _isEditMode;
-
-  Locale get locale => _locale;
+  static const _languagePrefKey = 'language';
 
   SettingsProvider() {
     _loadSettings();
@@ -19,22 +16,25 @@ class SettingsProvider with ChangeNotifier {
     try {
       final prefs = await SharedPreferences.getInstance();
       _isEditMode = prefs.getBool(_isEditModePrefKey) ?? false;
-      final localeString = prefs.getString(_localePrefKey) ?? 'en';
-      _locale = Locale(localeString);
+      _language = prefs.getString(_languagePrefKey);
       notifyListeners();
     } catch (e) {
       // Ignore errors loading preferences.
     }
   }
 
-  void setEditMode(bool value) {
+  bool get isEditMode => _isEditMode;
+
+  set isEditMode(bool value) {
     _isEditMode = value;
     notifyListeners();
     _saveSettings();
   }
 
-  void setLocale(Locale value) {
-    _locale = value;
+  Locale? get locale => _language != null ? Locale(_language!) : null;
+
+  set language(String language) {
+    _language = language;
     notifyListeners();
     _saveSettings();
   }
@@ -43,7 +43,11 @@ class SettingsProvider with ChangeNotifier {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool(_isEditModePrefKey, _isEditMode);
-      await prefs.setString(_localePrefKey, _locale.languageCode);
+      if (_language != null) {
+        await prefs.setString(_languagePrefKey, _language!);
+      } else {
+        await prefs.remove(_languagePrefKey);
+      }
     } catch (e) {
       // Ignore errors saving preferences.
     }

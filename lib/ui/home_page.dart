@@ -6,23 +6,14 @@ import 'package:provider/provider.dart';
 import '../models/session_config.dart';
 import '../providers/sessions_provider.dart';
 import '../providers/settings_provider.dart';
+
 import 'practice_notes_page.dart';
 import 'practice_keys_page.dart';
 import 'practice_play_page.dart';
 import 'session_editor_page.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends StatelessWidget {
   const HomePage({super.key});
-
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  @override
-  void initState() {
-    super.initState();
-  }
 
   Future<void> _confirmDelete(
     BuildContext context,
@@ -85,16 +76,13 @@ class _HomePageState extends State<HomePage> {
       builder: (context, sessions, settings, child) {
         return Scaffold(
           appBar: AppBar(
-            // title: const Text("Helma's Note Trainer"),
             centerTitle: true,
             actions: [
               IconButton(
                 icon: Icon(settings.isEditMode ? Icons.check : Icons.settings),
                 tooltip:
                     settings.isEditMode ? 'Done Editing' : 'Manage Sessions',
-                onPressed: () {
-                  setState(() => settings.setEditMode(!settings.isEditMode));
-                },
+                onPressed: () => settings.isEditMode = !settings.isEditMode,
               ),
               IconButton(
                 icon: const Icon(Icons.info_outline),

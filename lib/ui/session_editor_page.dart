@@ -20,7 +20,6 @@ class SessionEditorPage extends StatefulWidget {
             type: SessionType.keys,
             keys: const [],
             notes: const [],
-            numChoices: 3,
           ),
       super();
 
@@ -35,10 +34,9 @@ class _SessionEditorPageState extends State<SessionEditorPage> {
 
   late IconData _selectedIconData;
   late SessionType _selectedType;
-  late int _selectedNumChoices;
 
-  Set<String> _selectedKeys = {};
-  Set<String> _selectedNotes = {};
+  Set<NoteKey> _selectedKeys = {};
+  Set<Note> _selectedNotes = {};
 
   @override
   void initState() {
@@ -48,7 +46,6 @@ class _SessionEditorPageState extends State<SessionEditorPage> {
     _timeLimitController.text = timeLimit <= 0 ? '' : timeLimit.toString();
     _selectedType = widget.config.type;
     _selectedIconData = widget.config.icon;
-    _selectedNumChoices = widget.config.numChoices;
     _selectedKeys = Set.from(widget.config.keys);
     _selectedNotes = Set.from(widget.config.notes);
   }
@@ -69,7 +66,6 @@ class _SessionEditorPageState extends State<SessionEditorPage> {
         type: _selectedType,
         keys: _selectedKeys.toList(),
         notes: _selectedNotes.toList(),
-        numChoices: _selectedNumChoices,
         timeLimitSeconds: int.tryParse(_timeLimitController.text) ?? 0,
         practicedTests: widget.config.practicedTests,
         successfulTests: widget.config.successfulTests,
@@ -145,7 +141,7 @@ class _SessionEditorPageState extends State<SessionEditorPage> {
   }
 
   Widget _buildSelectionGridForNotes() {
-    final allNotes = NoteMapping.getAllNotes();
+    final allNotes = getAllNotes();
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -158,20 +154,25 @@ class _SessionEditorPageState extends State<SessionEditorPage> {
         final note = allNotes[index];
         final style = const TextStyle(fontSize: 32);
         final isSelected = _selectedNotes.contains(note);
-        return _buildItem(NoteMapping.getNameFromNote(note), style, () {
-          if (isSelected) {
-            _selectedNotes.remove(note);
-          } else {
-            _selectedNotes.add(note);
-          }
-        }, isSelected);
+        return _buildItem(
+          Localizations.of(context, NoteLocalizations).name(note),
+          style,
+          () {
+            if (isSelected) {
+              _selectedNotes.remove(note);
+            } else {
+              _selectedNotes.add(note);
+            }
+          },
+          isSelected,
+        );
       },
     );
   }
 
   Widget _buildSelectionGridForKeys() {
-    final allNotes = NoteMapping.getAllKeys();
-    allNotes.insert(83, ''); // Highest note has no sharp, insert dummy node.
+    final allKeys = <NoteKey?>[...getAllKeys()];
+    allKeys.insert(83, null); // Highest note has no sharp, insert dummy node.
     final style = const TextStyle(fontSize: 24, fontFamily: 'StaffClefPitches');
     return GridView.builder(
       shrinkWrap: true,
@@ -180,17 +181,18 @@ class _SessionEditorPageState extends State<SessionEditorPage> {
         crossAxisCount: 8,
         mainAxisExtent: 108,
       ),
-      itemCount: allNotes.length + allNotes.length ~/ 7 + 1,
+      itemCount: allKeys.length + allKeys.length ~/ 7 + 1,
       itemBuilder: (context, index) {
         // First column shows the clef of that row,
         // the others show the notes without clef.
         final row = index ~/ 8;
         if (row * 8 == index) {
-          final rowElements = allNotes
+          final rowElements = allKeys
               .sublist(index - row)
-              .take(row % 12 == 11 ? 6 : 7);
+              .take(row % 12 == 11 ? 6 : 7)
+              .map((item) => item!);
           final item = rowElements.first;
-          final text = '    ${NoteMapping.getGlyphsFromKey(item)[0]}+';
+          final text = '    ${getGlyphsFromKey(item)[0]}+';
           final isSelected = _selectedKeys.containsAll(rowElements);
           return _buildItem(text, style, () {
             if (isSelected) {
@@ -201,11 +203,11 @@ class _SessionEditorPageState extends State<SessionEditorPage> {
           }, isSelected);
         }
 
-        final item = allNotes[index - row - 1];
-        if (item.isEmpty) {
+        final item = allKeys[index - row - 1];
+        if (item == null) {
           return const SizedBox();
         }
-        final text = '+${NoteMapping.getGlyphsFromKey(item)[2]}+';
+        final text = '+${getGlyphsFromKey(item)[2]}+';
         final isSelected = _selectedKeys.contains(item);
         return _buildItem(text, style, () {
           if (isSelected) {
@@ -218,7 +220,7 @@ class _SessionEditorPageState extends State<SessionEditorPage> {
     );
   }
 
-  Widget _buildNonEmptyValidator(Set<String> selected) {
+  Widget _buildNonEmptyValidator(Set<dynamic> selected) {
     return FormField<void>(
       validator: (value) {
         return selected.isEmpty ? 'Please select some elements' : null;
