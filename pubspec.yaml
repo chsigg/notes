@@ -57,13 +57,21 @@ dev_dependencies:
   flutter_lints: ^5.0.0
 
 flutter_launcher_icons:
+  image_path: "assets/icons/icon_light.png"
+
   android: true
-  ios: true
-  image_path: "assets/icons/icon_ios.png"
-  adaptive_icon_foreground: "assets/icons/icon_android.png"
+  adaptive_icon_foreground: "assets/icons/icon_light.png"
+  adaptive_icon_monochrome: "assets/icons/icon_light.png"
   adaptive_icon_background: "#ffffff"
-  adaptive_icon_foreground_inset: 0
-  min_sdk_android: 21 # android min sdk min:16, default 21
+  adaptive_icon_foreground_inset: 163
+
+  ios: true
+  remove_alpha_ios: true
+  image_path_ios_dark_transparent: "assets/icons/icon_dark.png"
+  image_path_ios_tinted_grayscale: "assets/icons/icon_dark.png"
+
+  web:
+    generate: true
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
