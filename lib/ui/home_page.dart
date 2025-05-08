@@ -15,10 +15,7 @@ import 'session_editor_page.dart';
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
-  Future<void> _confirmDelete(
-    BuildContext context,
-    SessionConfig config,
-  ) async {
+  void _confirmDelete(BuildContext context, SessionConfig config) async {
     final sessions = Provider.of<SessionsProvider>(context, listen: false);
     final confirm = await showDialog<bool>(
       context: context,

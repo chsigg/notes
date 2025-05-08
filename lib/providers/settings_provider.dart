@@ -12,15 +12,11 @@ class SettingsProvider with ChangeNotifier {
     _loadSettings();
   }
 
-  Future<void> _loadSettings() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      _isEditMode = prefs.getBool(_isEditModePrefKey) ?? false;
-      _language = prefs.getString(_languagePrefKey);
-      notifyListeners();
-    } catch (e) {
-      // Ignore errors loading preferences.
-    }
+  void _loadSettings() async {
+    final prefs = await SharedPreferences.getInstance();
+    _isEditMode = prefs.getBool(_isEditModePrefKey) ?? false;
+    _language = prefs.getString(_languagePrefKey);
+    notifyListeners();
   }
 
   bool get isEditMode => _isEditMode;
@@ -38,17 +34,13 @@ class SettingsProvider with ChangeNotifier {
     _saveSettings();
   }
 
-  Future<void> _saveSettings() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool(_isEditModePrefKey, _isEditMode);
-      if (_language != null) {
-        await prefs.setString(_languagePrefKey, _language!);
-      } else {
-        await prefs.remove(_languagePrefKey);
-      }
-    } catch (e) {
-      // Ignore errors saving preferences.
+  void _saveSettings() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_isEditModePrefKey, _isEditMode);
+    if (_language != null) {
+      await prefs.setString(_languagePrefKey, _language!);
+    } else {
+      await prefs.remove(_languagePrefKey);
     }
   }
 }

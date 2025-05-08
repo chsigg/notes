@@ -15,15 +15,14 @@ class SessionsProvider with ChangeNotifier {
     _loadConfigs();
   }
 
-  Future<void> _loadConfigs() async {
+  void _loadConfigs() async {
     final prefs = await SharedPreferences.getInstance();
     final jsonString = prefs.getString(_configsPrefKey);
     if (jsonString == null || jsonString.isEmpty) {
       _configs = SessionConfig.getDefaultConfigs();
     } else {
-      final jsonList = jsonDecode(jsonString) as List<dynamic>;
       _configs = [
-        ...jsonList.map((json) {
+        ...(jsonDecode(jsonString) as List).map((json) {
           return SessionConfig.fromJson(json as Map<String, dynamic>);
         }),
       ];
@@ -58,10 +57,9 @@ class SessionsProvider with ChangeNotifier {
     _saveConfigs();
   }
 
-  Future<void> _saveConfigs() async {
+  void _saveConfigs() async {
     final prefs = await SharedPreferences.getInstance();
-    final jsonList = _configs.map((session) => session.toJson()).toList();
-    final jsonString = jsonEncode(jsonList);
-    await prefs.setString(_configsPrefKey, jsonString);
+    final jsonList = [..._configs.map((session) => session.toJson())];
+    await prefs.setString(_configsPrefKey, jsonEncode(jsonList));
   }
 }

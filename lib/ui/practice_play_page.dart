@@ -76,7 +76,7 @@ class _PracticePlayPageState extends State<PracticePlayPage> {
     _startAudioRecording();
   }
 
-  Future<void> _startAudioRecording() async {
+  void _startAudioRecording() async {
     await _stopAudioRecording();
 
     final recordStream = await _audioRecorder.startStream(
@@ -237,11 +237,12 @@ class _PracticePlayPageState extends State<PracticePlayPage> {
         actions: [if (_timerWidget != null) _timerWidget!, SizedBox(width: 16)],
       ),
       body: Center(
-        child: ListView(
-          shrinkWrap: true,
-          children: [
-            // --- The Question Display ---
+        child:
             _errorWidget ??
+            ListView(
+              shrinkWrap: true,
+              children: [
+                // --- The Question Display ---
                 Text(
                   Localizations.of(
                     context,
@@ -250,11 +251,11 @@ class _PracticePlayPageState extends State<PracticePlayPage> {
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 72),
                 ),
-            const SizedBox(height: 32),
-            _statusWidget ?? SizedBox(height: 32),
-            const SizedBox(height: 32),
-          ],
-        ),
+                const SizedBox(height: 32),
+                _statusWidget ?? SizedBox(height: 32),
+                const SizedBox(height: 32),
+              ],
+            ),
       ),
     );
   }
