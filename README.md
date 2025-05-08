@@ -21,7 +21,9 @@ See it in action at https://csigg.com/notes/.
 
 # Screen shots
 
-<img src="assets/screenshots/home_page.png" alt="Home Page" width="256" height="480"/>
-<img src="assets/screenshots/treble_names.png" alt="Treble Names" width="256" height="480"/>
-<img src="assets/screenshots/play_tone.png" alt="Play Tone" width="256" height="480"/>
-<img src="assets/screenshots/edit_session.png" alt="Edit Session" width="256" height="480"/>
+<p float="left">
+  <img src="assets/screenshots/home_page.png"    alt="Home Page"    width="256" height="480"/>
+  <img src="assets/screenshots/treble_names.png" alt="Treble Names" width="256" height="480"/>
+  <img src="assets/screenshots/play_tone.png"    alt="Play Tone"    width="256" height="480"/>
+  <img src="assets/screenshots/edit_session.png" alt="Edit Session" width="256" height="480"/>
+</p>
