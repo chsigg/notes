@@ -144,9 +144,9 @@ class _PracticeNotesPageState extends State<PracticeNotesPage> {
                 ..._answerNotes.map((note) {
                   Color? buttonColor;
                   if (_correctNote == note) {
-                    buttonColor = Colors.green[400];
+                    buttonColor = Colors.green;
                   } else if (_incorrectNotes.contains(note)) {
-                    buttonColor = Colors.red[400];
+                    buttonColor = Colors.red;
                   }
                   return Padding(
                     padding: const EdgeInsets.all(12),

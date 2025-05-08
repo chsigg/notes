@@ -7,6 +7,7 @@ enum Clef {
   bass('𝄢');
 
   final String glyph;
+
   const Clef(this.glyph);
 
   @override
@@ -40,6 +41,7 @@ enum Accidental {
   flat('♭');
 
   final String glyph;
+
   const Accidental(this.glyph);
 
   @override
@@ -162,8 +164,12 @@ List<NoteKey> getAllKeys() {
   return [..._keyToGlyphsMap.keys];
 }
 
-List<NoteKey> getAllTrebleKeys() {
-  return [...getAllKeys().where((key) => key.clef == Clef.treble)];
+List<NoteKey> getMiddleTrebleKeys() {
+  return [
+    ...getAllKeys().where(
+      (key) => key.clef == Clef.treble && [4, 5].contains(key.octave),
+    ),
+  ];
 }
 
 List<NoteKey> getAllBassKeys() {

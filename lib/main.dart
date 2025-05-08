@@ -29,13 +29,15 @@ class _MyApp extends StatefulWidget {
 class _MyAppState extends State<_MyApp> {
   @override
   Widget build(BuildContext context) {
+    const color = Colors.orange;
     return Consumer<SettingsProvider>(
       builder:
           (context, settings, child) => MaterialApp(
             title: "Helma's Note Trainer",
-            theme: ThemeData(
-              primarySwatch: Colors.blue,
-              visualDensity: VisualDensity.adaptivePlatformDensity,
+            theme: ThemeData(colorSchemeSeed: color),
+            darkTheme: ThemeData(
+              colorSchemeSeed: color,
+              brightness: Brightness.dark,
             ),
             supportedLocales: NoteLocalizations.supportedLanguages.map(
               (language) => Locale(language),

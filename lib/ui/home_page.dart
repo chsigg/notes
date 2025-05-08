@@ -5,6 +5,7 @@ import '../models/session_config.dart';
 import '../providers/sessions_provider.dart';
 import '../providers/settings_provider.dart';
 import '../utils/note_mapping.dart';
+
 import 'practice_keys_page.dart';
 import 'practice_notes_page.dart';
 import 'practice_play_page.dart';
@@ -74,12 +75,16 @@ class HomePage extends StatelessWidget {
     const double leadingWidth = 64;
 
     if (index == 0) {
-      return ListTile(
-        leading: SizedBox(
-          width: leadingWidth,
-          child: Center(child: const Icon(Icons.check, color: Colors.green)),
-        ),
-      );
+      return configs.any((config) => config.practicedTests > 0)
+          ? ListTile(
+            leading: SizedBox(
+              width: leadingWidth,
+              child: Center(
+                child: const Icon(Icons.check, color: Colors.green),
+              ),
+            ),
+          )
+          : Container();
     }
 
     if (index > configs.length) {
@@ -93,11 +98,12 @@ class HomePage extends StatelessWidget {
     }
 
     final config = configs[index - 1];
-
-    var successCountString = '${config.successfulTests}';
+    var successCountString = '';
     if (config.practicedTests > 0) {
-      final successRate = config.successfulTests / config.practicedTests;
-      successCountString += ' (${(successRate * 100.0).toStringAsFixed(0)}%)';
+      final successPercent =
+          config.successfulTests / config.practicedTests * 100;
+      successCountString =
+          '${config.successfulTests}\n${successPercent.toStringAsFixed(0)}%';
     }
 
     final editButtons = Row(
@@ -140,13 +146,27 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const double iconSize = 72;
     return Consumer2<SessionsProvider, SettingsProvider>(
       builder: (context, sessions, settings, child) {
         final isEditMode = settings.isEditMode;
         final appLanguage = Localizations.localeOf(context).languageCode;
         return Scaffold(
           appBar: AppBar(
-            centerTitle: true,
+            bottom: PreferredSize(
+              preferredSize: Size.square(iconSize),
+              child: Padding(
+                padding: EdgeInsets.only(bottom: 16),
+                child: Image.asset(
+                  switch (Theme.of(context).brightness) {
+                    Brightness.light => 'assets/icons/icon_light.png',
+                    Brightness.dark => 'assets/icons/icon_dark.png',
+                  },
+                  height: iconSize,
+                  width: iconSize,
+                ),
+              ),
+            ),
             actions: [
               IconButton(
                 icon: Icon(isEditMode ? Icons.check : Icons.settings),
@@ -163,7 +183,6 @@ class HomePage extends StatelessWidget {
               SizedBox(width: 16),
             ],
           ),
-
           body: Center(
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 600),

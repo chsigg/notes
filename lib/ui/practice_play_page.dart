@@ -65,7 +65,7 @@ class _PracticePlayPageState extends State<PracticePlayPage> {
   void _initAudioRecording() async {
     if (!await _audioRecorder.hasPermission()) {
       return setState(() {
-        _errorWidget = Icon(Icons.mic_off, color: Colors.red[900], size: 48);
+        _errorWidget = Icon(Icons.mic_off, color: Colors.red, size: 48);
       });
     }
     // Note: hasPermission() triggers an inactive/resumed state change.
@@ -200,7 +200,7 @@ class _PracticePlayPageState extends State<PracticePlayPage> {
     final sessions = Provider.of<SessionsProvider>(context, listen: false);
     sessions.incrementSessionStats(widget.config.id, isCorrect);
     final statusWidget = () {
-      final color = isCorrect ? Colors.green[400] : Colors.red[400];
+      final color = isCorrect ? Colors.green : Colors.red;
       if (isTuning) {
         final tune = exp(ln2 / 12 * semitonesOffset) * targetPitch;
         return SizedBox(

@@ -146,9 +146,9 @@ class _PracticeKeysPageState extends State<PracticeKeysPage> {
                 ..._answerKeys.map((choice) {
                   Color? buttonColor;
                   if (_correctKey == choice) {
-                    buttonColor = Colors.green[400];
+                    buttonColor = Colors.green;
                   } else if (_incorrectKeys.contains(choice)) {
-                    buttonColor = Colors.red[400];
+                    buttonColor = Colors.red;
                   }
                   return Padding(
                     padding: const EdgeInsets.all(12),

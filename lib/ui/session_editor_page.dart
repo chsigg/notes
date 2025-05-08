@@ -228,10 +228,7 @@ class _SessionEditorPageState extends State<SessionEditorPage> {
       },
       builder: (state) {
         if (state.hasError) {
-          return Text(
-            state.errorText!,
-            style: TextStyle(color: Colors.red[900]),
-          );
+          return Text(state.errorText!, style: TextStyle(color: Colors.red));
         }
         return SizedBox();
       },

@@ -88,7 +88,7 @@ class SessionConfig {
         title: 'Treble Names',
         icon: SessionIcons.trebleIcon,
         type: SessionType.notes,
-        keys: getAllTrebleKeys(),
+        keys: getMiddleTrebleKeys(),
         notes: getAllNotes(),
       ),
       SessionConfig(
