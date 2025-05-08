@@ -21,7 +21,7 @@ See it in action at https://csigg.com/notes/.
 
 # Screen shots
 
-![Home Page](assets/screenshots/home_page.png)
-![Treble Names](assets/screenshots/treble_names.png)
-![Play Tone](assets/screenshots/play_tone.png)
-![Edit Session](assets/screenshots/edit_session.png)
+<img src="assets/screenshots/home_page.png" alt="Home Page" width="256" height="480"/>
+<img src="assets/screenshots/treble_names.png" alt="Treble Names" width="256" height="480"/>
+<img src="assets/screenshots/play_tone.png" alt="Play Tone" width="256" height="480"/>
+<img src="assets/screenshots/edit_session.png" alt="Edit Session" width="256" height="480"/>

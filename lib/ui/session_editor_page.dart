@@ -125,14 +125,12 @@ class _SessionEditorPageState extends State<SessionEditorPage> {
     Function onTap,
     bool isSelected,
   ) {
-    final color = Theme.of(context).primaryColor;
+    final color = Theme.of(context).colorScheme.primaryContainer;
     return InkWell(
       onTap: () => setState(() => onTap()),
       child: Container(
         clipBehavior: Clip.hardEdge,
-        decoration: BoxDecoration(
-          color: isSelected ? color.withAlpha(77) : null,
-        ),
+        decoration: BoxDecoration(color: isSelected ? color : null),
         child: OverflowBox(
           maxWidth: double.infinity,
           child: Center(child: Text(text, style: style)),
@@ -153,7 +151,7 @@ class _SessionEditorPageState extends State<SessionEditorPage> {
       itemCount: allNotes.length,
       itemBuilder: (context, index) {
         final note = allNotes[index];
-        final style = const TextStyle(fontSize: 32);
+        final style = const TextStyle(fontSize: 24);
         final isSelected = _selectedNotes.contains(note);
         return _buildItem(
           Localizations.of(context, NoteLocalizations).name(note),
