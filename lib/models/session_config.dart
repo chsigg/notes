@@ -40,9 +40,9 @@ class SessionConfig {
       id: json['id'] as String,
       title: json['title'] as String,
       icon: _iconFromJsonManual(json['icon'] as Map<String, dynamic>),
-      type: _sessionTypeFromJsonManual(json['type'] as String),
-      keys: List<NoteKey>.from(json['keys'] as List),
-      notes: List<Note>.from(json['notes'] as List),
+      type: SessionType.values.byName(json['type'] as String),
+      keys: [...(json['keys'] as List).map((key) => NoteKey.fromString(key))],
+      notes: [...(json['notes'] as List).map((note) => Note.fromString(note))],
       timeLimitSeconds: json['timeLimitSeconds'] as int,
       practicedTests: json['practicedTests'] as int,
       successfulTests: json['successfulTests'] as int,
@@ -54,9 +54,9 @@ class SessionConfig {
       'id': id,
       'title': title,
       'icon': _iconToJsonManual(icon),
-      'type': _sessionTypeToJsonManual(type),
-      'keys': keys,
-      'notes': notes,
+      'type': type.name,
+      'keys': [...keys.map((key) => key.toString())],
+      'notes': [...notes.map((key) => key.toString())],
       'timeLimitSeconds': timeLimitSeconds,
       'practicedTests': practicedTests,
       'successfulTests': successfulTests,
@@ -78,15 +78,6 @@ class SessionConfig {
           icon.fontFamily == json['fontFamily'] &&
           icon.fontPackage == json['fontPackage'],
       orElse: () => Icons.music_note,
-    );
-  }
-
-  static String _sessionTypeToJsonManual(SessionType type) => type.name;
-
-  static SessionType _sessionTypeFromJsonManual(String typeName) {
-    return SessionType.values.firstWhere(
-      (e) => e.name == typeName,
-      orElse: () => SessionType.notes,
     );
   }
 

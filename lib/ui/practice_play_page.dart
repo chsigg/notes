@@ -79,81 +79,63 @@ class _PracticePlayPageState extends State<PracticePlayPage> {
   Future<void> _startAudioRecording() async {
     await _stopAudioRecording();
 
-    void setError(String message) {
-      setState(() {
-        _errorWidget = Text(
-          message,
-          textAlign: TextAlign.center,
-          style: TextStyle(color: Colors.red[900]),
-        );
-      });
-    }
+    final recordStream = await _audioRecorder.startStream(
+      const RecordConfig(
+        encoder: AudioEncoder.pcm16bits,
+        sampleRate: _sampleRate,
+        numChannels: 1,
+        autoGain: true,
+        noiseSuppress: true,
+      ),
+    );
 
-    try {
-      final recordStream = await _audioRecorder.startStream(
-        const RecordConfig(
-          encoder: AudioEncoder.pcm16bits,
-          sampleRate: _sampleRate,
-          numChannels: 1,
-          autoGain: true,
-          noiseSuppress: true,
-        ),
-      );
-
-      final buffer = BytesBuilder();
-      final resultWindow = <double>[];
-      final pitchStream = recordStream
-          .expand((data) {
-            buffer.add(data);
-            final chunks = <Uint8List>[];
-            var bytes = buffer.takeBytes();
-            const chunkSize = _bufferSize /* pcm16bits/UInt8: */ * 2;
-            while (bytes.length >= chunkSize) {
-              chunks.add(bytes.sublist(0, chunkSize));
-              bytes = bytes.sublist(chunkSize);
-            }
-            buffer.add(bytes);
-            return chunks;
-          })
-          .exhaustMap((chunk) {
-            if (_answerTimer.isActive) {
-              return Stream.empty();
-            }
-            return Stream.fromFuture(
-              compute((chunk) async {
-                final pitchDetector = PitchDetector(
-                  audioSampleRate: _sampleRate * 1.0,
-                  bufferSize: _bufferSize,
-                );
-                return pitchDetector.getPitchFromIntBuffer(chunk);
-              }, chunk),
-            );
-          })
-          .expand((result) {
-            if (result.probability < 0.5) {
-              resultWindow.clear();
-              return <double>[];
-            }
-            resultWindow.add(result.pitch);
-            if (resultWindow.length < 4) {
-              return <double>[];
-            }
-            final product = resultWindow.reduce((a, b) => a * b);
-            final geomean = pow(product, 1.0 / resultWindow.length) as double;
-            final areAllWithinOneSemitoneOfGeomean = resultWindow.every(
-              (pitch) => log(pitch / geomean).abs() * 12 <= ln2,
-            );
+    final buffer = BytesBuilder();
+    final resultWindow = <double>[];
+    final pitchStream = recordStream
+        .expand((data) {
+          buffer.add(data);
+          final chunks = <Uint8List>[];
+          var bytes = buffer.takeBytes();
+          const chunkSize = _bufferSize /* pcm16bits/UInt8: */ * 2;
+          while (bytes.length >= chunkSize) {
+            chunks.add(bytes.sublist(0, chunkSize));
+            bytes = bytes.sublist(chunkSize);
+          }
+          buffer.add(bytes);
+          return chunks;
+        })
+        .exhaustMap((chunk) {
+          if (_answerTimer.isActive) {
+            return Stream.empty();
+          }
+          return Stream.fromFuture(
+            compute((chunk) async {
+              final pitchDetector = PitchDetector(
+                audioSampleRate: _sampleRate * 1.0,
+                bufferSize: _bufferSize,
+              );
+              return pitchDetector.getPitchFromIntBuffer(chunk);
+            }, chunk),
+          );
+        })
+        .expand((result) {
+          if (result.probability < 0.5) {
             resultWindow.clear();
-            return [if (areAllWithinOneSemitoneOfGeomean) geomean];
-          });
-
-      _pitchSubscription = pitchStream.listen(
-        _handlePitch,
-        onError: (error) => setError(error.toString()),
-      );
-    } catch (error) {
-      setError(error.toString());
-    }
+            return <double>[];
+          }
+          resultWindow.add(result.pitch);
+          if (resultWindow.length < 4) {
+            return <double>[];
+          }
+          final product = resultWindow.reduce((a, b) => a * b);
+          final geomean = pow(product, 1.0 / resultWindow.length) as double;
+          final areAllWithinOneSemitoneOfGeomean = resultWindow.every(
+            (pitch) => log(pitch / geomean).abs() * 12 <= ln2,
+          );
+          resultWindow.clear();
+          return [if (areAllWithinOneSemitoneOfGeomean) geomean];
+        });
+    _pitchSubscription = pitchStream.listen(_handlePitch);
   }
 
   Future<void> _stopAudioRecording() async {

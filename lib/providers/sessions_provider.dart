@@ -16,23 +16,17 @@ class SessionsProvider with ChangeNotifier {
   }
 
   Future<void> _loadConfigs() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final jsonString = prefs.getString(_configsPrefKey);
-      if (jsonString == null || jsonString.isEmpty) {
-        throw Exception("Couldn't load configs from prefs");
-      }
+    final prefs = await SharedPreferences.getInstance();
+    final jsonString = prefs.getString(_configsPrefKey);
+    if (jsonString == null || jsonString.isEmpty) {
+      _configs = SessionConfig.getDefaultConfigs();
+    } else {
       final jsonList = jsonDecode(jsonString) as List<dynamic>;
       _configs = [
         ...jsonList.map((json) {
           return SessionConfig.fromJson(json as Map<String, dynamic>);
         }),
       ];
-      if (_configs.isEmpty) {
-        throw Exception('Loaded configs are empty');
-      }
-    } catch (e) {
-      _configs = SessionConfig.getDefaultConfigs();
     }
     notifyListeners();
   }
@@ -65,13 +59,9 @@ class SessionsProvider with ChangeNotifier {
   }
 
   Future<void> _saveConfigs() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final jsonList = _configs.map((session) => session.toJson()).toList();
-      final jsonString = jsonEncode(jsonList);
-      await prefs.setString(_configsPrefKey, jsonString);
-    } catch (e) {
-      // Ignore errors saving configs.
-    }
+    final prefs = await SharedPreferences.getInstance();
+    final jsonList = _configs.map((session) => session.toJson()).toList();
+    final jsonString = jsonEncode(jsonList);
+    await prefs.setString(_configsPrefKey, jsonString);
   }
 }
