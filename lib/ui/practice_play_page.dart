@@ -25,8 +25,7 @@ class PracticePlayPage extends StatefulWidget {
   State<PracticePlayPage> createState() => _PracticePlayPageState();
 }
 
-class _PracticePlayPageState extends State<PracticePlayPage>
-    with WidgetsBindingObserver {
+class _PracticePlayPageState extends State<PracticePlayPage> {
   TimerWidget? _timerWidget;
   Timer _answerTimer = Timer(Duration.zero, () {});
 
@@ -34,9 +33,10 @@ class _PracticePlayPageState extends State<PracticePlayPage>
   double? _aPitch;
 
   Widget? _statusWidget;
-  String? _errorMessage;
+  Widget? _errorWidget;
 
   StreamSubscription<double>? _pitchSubscription;
+  AppLifecycleListener? _listener;
 
   final _audioRecorder = AudioRecorder();
   final _notesQueue = Queue<Note>();
@@ -48,39 +48,48 @@ class _PracticePlayPageState extends State<PracticePlayPage>
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
     WakelockPlus.enable();
-    _startAudioRecording();
     _addQuestions();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    switch (state) {
-      case AppLifecycleState.paused:
-        _stopAudioRecording();
-      case AppLifecycleState.resumed:
-        _startAudioRecording();
-      default:
-        break;
-    }
+    _initAudioRecording();
   }
 
   @override
   void dispose() {
     _answerTimer.cancel();
+    _listener?.dispose();
     _stopAudioRecording().then((_) => _audioRecorder.dispose());
     WakelockPlus.disable();
-    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
-  Future<void> _startAudioRecording() async {
-    try {
-      if (!await _audioRecorder.hasPermission()) {
-        throw Exception('Microphone permission denied.');
-      }
+  void _initAudioRecording() async {
+    if (!await _audioRecorder.hasPermission()) {
+      return setState(() {
+        _errorWidget = Icon(Icons.mic_off, color: Colors.red[900], size: 48);
+      });
+    }
+    // Note: hasPermission() triggers an inactive/resumed state change.
+    _listener = AppLifecycleListener(
+      onInactive: () => _stopAudioRecording(),
+      onResume: () => _startAudioRecording(),
+    );
+    _startAudioRecording();
+  }
 
+  Future<void> _startAudioRecording() async {
+    await _stopAudioRecording();
+
+    void setError(String message) {
+      setState(() {
+        _errorWidget = Text(
+          message,
+          textAlign: TextAlign.center,
+          style: TextStyle(color: Colors.red[900]),
+        );
+      });
+    }
+
+    try {
       final recordStream = await _audioRecorder.startStream(
         const RecordConfig(
           encoder: AudioEncoder.pcm16bits,
@@ -140,12 +149,10 @@ class _PracticePlayPageState extends State<PracticePlayPage>
 
       _pitchSubscription = pitchStream.listen(
         _handlePitch,
-        onError: (error) {
-          setState(() => _errorMessage = error.toString());
-        },
+        onError: (error) => setError(error.toString()),
       );
     } catch (error) {
-      setState(() => _errorMessage = error.toString());
+      setError(error.toString());
     }
   }
 
@@ -252,23 +259,18 @@ class _PracticePlayPageState extends State<PracticePlayPage>
           shrinkWrap: true,
           children: [
             // --- The Question Display ---
-            Text(
-              Localizations.of(context, NoteLocalizations).name(_questionNote),
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 72),
-            ),
+            _errorWidget ??
+                Text(
+                  Localizations.of(
+                    context,
+                    NoteLocalizations,
+                  ).name(_questionNote),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 72),
+                ),
             const SizedBox(height: 32),
             _statusWidget ?? SizedBox(height: 32),
             const SizedBox(height: 32),
-            // --- Error Message ---
-            if (_errorMessage != null) ...[
-              Text(
-                _errorMessage!,
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.red[900]),
-              ),
-              const SizedBox(height: 32),
-            ],
           ],
         ),
       ),
