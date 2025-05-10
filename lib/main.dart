@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
@@ -8,7 +9,15 @@ import 'ui/home_page.dart';
 import 'utils/note_mapping.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  final binding = WidgetsFlutterBinding.ensureInitialized();
+
+  // binding.deferFirstFrame();
+  binding.addPostFrameCallback((_) async {
+    final fontLoader = FontLoader('StaffClefPitches');
+    fontLoader.addFont(rootBundle.load('assets/fonts/staff_clef_pitches.ttf'));
+    await fontLoader.load();
+    // binding.allowFirstFrame();
+  });
 
   runApp(
     MultiProvider(
@@ -29,14 +38,14 @@ class _MyApp extends StatefulWidget {
 class _MyAppState extends State<_MyApp> {
   @override
   Widget build(BuildContext context) {
-    const color = Colors.orange;
+    const seedColor = Colors.orange;
     return Consumer<SettingsProvider>(
       builder:
           (context, settings, child) => MaterialApp(
             title: "Helma's Note Trainer",
-            theme: ThemeData(colorSchemeSeed: color),
+            theme: ThemeData(colorSchemeSeed: seedColor),
             darkTheme: ThemeData(
-              colorSchemeSeed: color,
+              colorSchemeSeed: seedColor,
               brightness: Brightness.dark,
             ),
             supportedLocales: NoteLocalizations.supportedLanguages.map(

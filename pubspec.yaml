@@ -97,6 +97,7 @@ flutter:
   # https://flutter.dev/to/asset-from-package
   assets:
     - assets/icons/icon.png
+    - assets/fonts/staff_clef_pitches.ttf
 
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
@@ -117,13 +118,3 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
-  fonts:
-    - family: StaffClefPitches
-      fonts:
-        - asset: assets/fonts/staff_clef_pitches.ttf
-    # Flutter tree shaking seems to apply to fonts that are used in any IconData. We use the same
-    # font in TextStyle as well, so it should not be tree-shaken. Create two font families from
-    # two identical files, one that is used for IconData and the other one for TextStyle.
-    - family: StaffClefPitchesForIcons
-      fonts:
-        - asset: assets/fonts/staff_clef_pitches_copy.ttf
