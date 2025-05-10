@@ -9,15 +9,10 @@ import 'ui/home_page.dart';
 import 'utils/note_mapping.dart';
 
 void main() async {
-  final binding = WidgetsFlutterBinding.ensureInitialized();
-
-  // binding.deferFirstFrame();
-  binding.addPostFrameCallback((_) async {
-    final fontLoader = FontLoader('StaffClefPitches');
-    fontLoader.addFont(rootBundle.load('assets/fonts/staff_clef_pitches.ttf'));
-    await fontLoader.load();
-    // binding.allowFirstFrame();
-  });
+  WidgetsFlutterBinding.ensureInitialized();
+  final fontLoader = FontLoader('StaffClefPitches');
+  fontLoader.addFont(rootBundle.load('assets/fonts/staff_clef_pitches.ttf'));
+  await fontLoader.load();
 
   runApp(
     MultiProvider(

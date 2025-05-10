@@ -153,6 +153,7 @@ class HomePage extends StatelessWidget {
         final appLanguage = Localizations.localeOf(context).languageCode;
         return Scaffold(
           appBar: AppBar(
+            leading: Text('♯♭', style: TextStyle(fontSize: 0)),
             toolbarHeight: iconSize,
             bottom: PreferredSize(
               preferredSize: Size.square(iconSize),
