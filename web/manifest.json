@@ -3,8 +3,6 @@
   "short_name": "Helma's Note Trainer",
   "start_url": "/notes/",
   "display": "standalone",
-  "background_color": "#ff9800",
-  "theme_color": "#ff9800",
   "description": "Application to practice the names of music notes.",
   "orientation": "portrait-primary",
   "prefer_related_applications": false,
