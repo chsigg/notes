@@ -1,11 +1,11 @@
 {
   "name": "Helma's Note Trainer",
-  "short_name": "Notes",
-  "start_url": ".",
+  "short_name": "Helma's Note Trainer",
+  "start_url": "/notes/",
   "display": "standalone",
-  "background_color": "#0175C2",
-  "theme_color": "#0175C2",
-  "description": "App to train music notes.",
+  "background_color": "#ff9800",
+  "theme_color": "#ff9800",
+  "description": "Application to practice the names of music notes.",
   "orientation": "portrait-primary",
   "prefer_related_applications": false,
   "icons": [

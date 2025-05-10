@@ -57,21 +57,22 @@ dev_dependencies:
   flutter_lints: ^5.0.0
 
 flutter_launcher_icons:
-  image_path: "assets/icons/icon_light.png"
+  image_path: "assets/icons/icon.png"
 
   android: true
-  adaptive_icon_foreground: "assets/icons/icon_light.png"
-  adaptive_icon_monochrome: "assets/icons/icon_light.png"
+  adaptive_icon_foreground: "assets/icons/icon.png"
+  adaptive_icon_monochrome: "assets/icons/icon.png"
   adaptive_icon_background: "#ffffff"
-  adaptive_icon_foreground_inset: 20
+  adaptive_icon_foreground_inset: 22
 
   ios: true
   remove_alpha_ios: true
-  image_path_ios_dark_transparent: "assets/icons/icon_dark.png"
-  image_path_ios_tinted_grayscale: "assets/icons/icon_dark.png"
+  image_path_ios_tinted_grayscale: "assets/icons/icon.png"
 
   web:
     generate: true
+    background_color: "#ff9800" # TODO:fix
+    theme_color: "#ff9800" # TODO:fix
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -94,6 +95,8 @@ flutter:
 
   # For details regarding adding assets from package dependencies, see
   # https://flutter.dev/to/asset-from-package
+  assets:
+    - assets/icons/icon.png
 
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
@@ -124,7 +127,3 @@ flutter:
     - family: StaffClefPitchesForIcons
       fonts:
         - asset: assets/fonts/staff_clef_pitches_copy.ttf
-
-  assets:
-    - assets/icons/icon_dark.png
-    - assets/icons/icon_light.png

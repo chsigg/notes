@@ -146,7 +146,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const double iconSize = 72;
+    const double iconSize = 100;
     return Consumer2<SessionsProvider, SettingsProvider>(
       builder: (context, sessions, settings, child) {
         final isEditMode = settings.isEditMode;
@@ -158,13 +158,22 @@ class HomePage extends StatelessWidget {
               preferredSize: Size.square(iconSize),
               child: Padding(
                 padding: EdgeInsets.only(bottom: 16),
-                child: Image.asset(
-                  switch (Theme.of(context).brightness) {
-                    Brightness.light => 'assets/icons/icon_light.png',
-                    Brightness.dark => 'assets/icons/icon_dark.png',
-                  },
+                child: Container(
                   height: iconSize,
                   width: iconSize,
+                  decoration: BoxDecoration(
+                    color: (ColorScheme scheme) {
+                      return switch (scheme.brightness) {
+                        Brightness.dark => scheme.onSurface,
+                        Brightness.light => scheme.surface,
+                      };
+                    }(Theme.of(context).colorScheme),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.all(iconSize * 0.07),
+                    child: Image(image: AssetImage('assets/icons/icon.png')),
+                  ),
                 ),
               ),
             ),
