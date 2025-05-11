@@ -188,7 +188,7 @@ Note getNoteFromKey(NoteKey key) {
 }
 
 class NoteLocalizations {
-  static const List<String> supportedLanguages = ['en', 'de', 'nl'];
+  static const List<String> supportedLanguages = ['de', 'en', 'nl'];
   static const LocalizationsDelegate<NoteLocalizations> delegate =
       _NoteLocalizationsDelegate();
 
