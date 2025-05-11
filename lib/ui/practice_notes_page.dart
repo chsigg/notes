@@ -155,11 +155,14 @@ class _PracticeNotesPageState extends State<PracticeNotesPage> {
                       clipBehavior: Clip.hardEdge,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: buttonColor,
-                        textStyle: const TextStyle(fontSize: 48),
                         minimumSize: const Size(100, 100),
                       ),
                       child: Text(
                         Localizations.of(context, NoteLocalizations).name(note),
+                        style: const TextStyle(fontSize: 48),
+                        textHeightBehavior: TextHeightBehavior(
+                          applyHeightToLastDescent: false,
+                        ),
                       ),
                     ),
                   );
