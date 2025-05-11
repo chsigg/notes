@@ -33,7 +33,7 @@ class _MyApp extends StatefulWidget {
 class _MyAppState extends State<_MyApp> {
   @override
   Widget build(BuildContext context) {
-    const seedColor = Colors.orange;
+    const seedColor = Colors.pink;
     return Consumer<SettingsProvider>(
       builder:
           (context, settings, child) => MaterialApp(
