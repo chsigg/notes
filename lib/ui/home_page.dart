@@ -74,20 +74,7 @@ class HomePage extends StatelessWidget {
   ) {
     const double leadingWidth = 64;
 
-    if (index == 0) {
-      return configs.any((config) => config.practicedTests > 0)
-          ? ListTile(
-            leading: SizedBox(
-              width: leadingWidth,
-              child: Center(
-                child: const Icon(Icons.check, color: Colors.green),
-              ),
-            ),
-          )
-          : Container();
-    }
-
-    if (index > configs.length) {
+    if (index == configs.length) {
       return ListTile(
         trailing: IconButton(
           icon: const Icon(Icons.add, color: Colors.green),
@@ -97,7 +84,7 @@ class HomePage extends StatelessWidget {
       );
     }
 
-    final config = configs[index - 1];
+    final config = configs[index];
     var successCountString = '';
     if (config.practicedTests > 0) {
       final successPercent =
@@ -204,7 +191,7 @@ class HomePage extends StatelessWidget {
                       child: ListView.builder(
                         shrinkWrap: true,
                         itemCount:
-                            sessions.configs.length + (isEditMode ? 2 : 1),
+                            sessions.configs.length + (isEditMode ? 1 : 0),
                         itemBuilder: (context, index) {
                           return _buildItem(
                             context,
