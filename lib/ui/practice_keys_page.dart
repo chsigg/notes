@@ -20,9 +20,9 @@ class PracticeKeysPage extends StatefulWidget {
 }
 
 class _PracticeKeysPageState extends State<PracticeKeysPage> {
-  TimerWidget? _timerWidget;
   Timer? _nextQuestionTimer;
 
+  late TimerWidget _timerWidget;
   late Note _questionNote;
   late List<NoteKey> _answerKeys;
   NoteKey? _correctKey;
@@ -75,17 +75,15 @@ class _PracticeKeysPageState extends State<PracticeKeysPage> {
     }
 
     setState(() {
+      _timerWidget = TimerWidget(
+        key: UniqueKey(),
+        timeSeconds: widget.config.timeLimitSeconds,
+        onTimerEnd: _onTimerEnd,
+      );
       _questionNote = questionNote;
       _answerKeys = _shuffled([...choices.take(widget.config.numChoices)]);
       _correctKey = null;
       _incorrectKeys = {};
-      if (widget.config.timeLimitSeconds > 0) {
-        _timerWidget = TimerWidget(
-          key: UniqueKey(),
-          timeSeconds: widget.config.timeLimitSeconds,
-          onTimerEnd: _onTimerEnd,
-        );
-      }
     });
   }
 
@@ -96,7 +94,11 @@ class _PracticeKeysPageState extends State<PracticeKeysPage> {
 
   void _onTimerEnd() {
     final sessions = Provider.of<SessionsProvider>(context, listen: false);
-    sessions.incrementSessionStats(widget.config.id, false);
+    sessions.incrementSessionStats(
+      widget.config.id,
+      false,
+      _timerWidget.elapsed,
+    );
     _goToNextQuestion();
   }
 
@@ -108,7 +110,7 @@ class _PracticeKeysPageState extends State<PracticeKeysPage> {
     Provider.of<SessionsProvider>(
       context,
       listen: false,
-    ).incrementSessionStats(widget.config.id, isCorrect);
+    ).incrementSessionStats(widget.config.id, isCorrect, _timerWidget.elapsed);
     if (isCorrect) {
       setState(() => _correctKey = tappedKey);
       _nextQuestionTimer = Timer(
@@ -126,7 +128,7 @@ class _PracticeKeysPageState extends State<PracticeKeysPage> {
       appBar: AppBar(
         title: Text(widget.config.title),
         centerTitle: true,
-        actions: [if (_timerWidget != null) _timerWidget!, SizedBox(width: 16)],
+        actions: [_timerWidget],
       ),
       body: Center(
         child: ListView(

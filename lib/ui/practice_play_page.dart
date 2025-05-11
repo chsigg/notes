@@ -26,9 +26,9 @@ class PracticePlayPage extends StatefulWidget {
 }
 
 class _PracticePlayPageState extends State<PracticePlayPage> {
-  TimerWidget? _timerWidget;
   Timer _answerTimer = Timer(Duration.zero, () {});
 
+  late TimerWidget _timerWidget;
   late Note _questionNote;
   double? _aPitch;
 
@@ -158,15 +158,13 @@ class _PracticePlayPageState extends State<PracticePlayPage> {
     }
     final note = _notesQueue.removeFirst();
     setState(() {
-      _statusWidget = null;
+      _timerWidget = TimerWidget(
+        key: UniqueKey(),
+        timeSeconds: _aPitch != null ? widget.config.timeLimitSeconds : 0,
+        onTimerEnd: _onTimerEnd,
+      );
       _questionNote = note;
-      if (_aPitch != null && widget.config.timeLimitSeconds > 0) {
-        _timerWidget = TimerWidget(
-          key: UniqueKey(),
-          timeSeconds: widget.config.timeLimitSeconds,
-          onTimerEnd: _onTimerEnd,
-        );
-      }
+      _statusWidget = null;
     });
   }
 
@@ -177,7 +175,11 @@ class _PracticePlayPageState extends State<PracticePlayPage> {
 
   void _onTimerEnd() {
     final sessions = Provider.of<SessionsProvider>(context, listen: false);
-    sessions.incrementSessionStats(widget.config.id, false);
+    sessions.incrementSessionStats(
+      widget.config.id,
+      false,
+      _timerWidget.elapsed,
+    );
     _goToNextQuestion();
   }
 
@@ -198,7 +200,11 @@ class _PracticePlayPageState extends State<PracticePlayPage> {
       _aPitch ??= pitch;
     }
     final sessions = Provider.of<SessionsProvider>(context, listen: false);
-    sessions.incrementSessionStats(widget.config.id, isCorrect);
+    sessions.incrementSessionStats(
+      widget.config.id,
+      isCorrect,
+      _timerWidget.elapsed,
+    );
     final statusWidget = () {
       final color = isCorrect ? Colors.green : Colors.red;
       if (isTuning) {
@@ -234,7 +240,7 @@ class _PracticePlayPageState extends State<PracticePlayPage> {
       appBar: AppBar(
         title: Text(widget.config.title),
         centerTitle: true,
-        actions: [if (_timerWidget != null) _timerWidget!, SizedBox(width: 16)],
+        actions: [_timerWidget],
       ),
       body: Center(
         child:

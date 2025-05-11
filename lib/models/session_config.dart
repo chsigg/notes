@@ -22,6 +22,7 @@ class SessionConfig {
 
   int practicedTests;
   int successfulTests;
+  Duration totalPracticeTime;
 
   SessionConfig({
     required this.id,
@@ -33,6 +34,7 @@ class SessionConfig {
     this.timeLimitSeconds = 0,
     this.practicedTests = 0,
     this.successfulTests = 0,
+    this.totalPracticeTime = Duration.zero,
   });
 
   factory SessionConfig.fromJson(Map<String, dynamic> json) {
@@ -46,6 +48,7 @@ class SessionConfig {
       timeLimitSeconds: json['timeLimitSeconds'] as int,
       practicedTests: json['practicedTests'] as int,
       successfulTests: json['successfulTests'] as int,
+      totalPracticeTime: Duration(seconds: json['totalPracticeTime'] ?? 0),
     );
   }
 
@@ -60,6 +63,7 @@ class SessionConfig {
       'timeLimitSeconds': timeLimitSeconds,
       'practicedTests': practicedTests,
       'successfulTests': successfulTests,
+      'totalPracticeTime': totalPracticeTime.inSeconds,
     };
   }
 

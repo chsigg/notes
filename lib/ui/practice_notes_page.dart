@@ -20,9 +20,9 @@ class PracticeNotesPage extends StatefulWidget {
 }
 
 class _PracticeNotesPageState extends State<PracticeNotesPage> {
-  TimerWidget? _timerWidget;
   Timer? _nextQuestionTimer;
 
+  late TimerWidget _timerWidget;
   late NoteKey _questionKey;
   late List<Note> _answerNotes;
   Note? _correctNote;
@@ -69,17 +69,15 @@ class _PracticeNotesPageState extends State<PracticeNotesPage> {
     }
 
     setState(() {
+      _timerWidget = TimerWidget(
+        key: UniqueKey(),
+        timeSeconds: widget.config.timeLimitSeconds,
+        onTimerEnd: _onTimerEnd,
+      );
       _questionKey = questionKey;
       _answerNotes = _shuffled([...choices.take(widget.config.numChoices)]);
       _correctNote = null;
       _incorrectNotes = {};
-      if (widget.config.timeLimitSeconds > 0) {
-        _timerWidget = TimerWidget(
-          key: UniqueKey(),
-          timeSeconds: widget.config.timeLimitSeconds,
-          onTimerEnd: _onTimerEnd,
-        );
-      }
     });
   }
 
@@ -90,7 +88,11 @@ class _PracticeNotesPageState extends State<PracticeNotesPage> {
 
   void _onTimerEnd() {
     final sessions = Provider.of<SessionsProvider>(context, listen: false);
-    sessions.incrementSessionStats(widget.config.id, false);
+    sessions.incrementSessionStats(
+      widget.config.id,
+      false,
+      _timerWidget.elapsed,
+    );
     _goToNextQuestion();
   }
 
@@ -100,7 +102,11 @@ class _PracticeNotesPageState extends State<PracticeNotesPage> {
     }
     final isCorrect = tappedNote == getNoteFromKey(_questionKey);
     final sessions = Provider.of<SessionsProvider>(context, listen: false);
-    sessions.incrementSessionStats(widget.config.id, isCorrect);
+    sessions.incrementSessionStats(
+      widget.config.id,
+      isCorrect,
+      _timerWidget.elapsed,
+    );
     if (isCorrect) {
       setState(() => _correctNote = tappedNote);
       _nextQuestionTimer = Timer(
@@ -118,7 +124,7 @@ class _PracticeNotesPageState extends State<PracticeNotesPage> {
       appBar: AppBar(
         title: Text(widget.config.title),
         centerTitle: true,
-        actions: [if (_timerWidget != null) _timerWidget!, SizedBox(width: 16)],
+        actions: [_timerWidget],
       ),
       body: Center(
         child: ListView(

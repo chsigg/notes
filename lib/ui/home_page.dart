@@ -85,12 +85,20 @@ class HomePage extends StatelessWidget {
     }
 
     final config = configs[index];
-    var successCountString = '';
+    Widget? statsText;
     if (config.practicedTests > 0) {
       final successPercent =
           config.successfulTests / config.practicedTests * 100;
-      successCountString =
-          '${config.successfulTests}\n${successPercent.toStringAsFixed(0)}%';
+      final practiceTime =
+          (config.totalPracticeTime + Duration(minutes: 1)).toString();
+      final statsString =
+          '${config.successfulTests}'
+          ' (${successPercent.toStringAsFixed(0)}%)'
+          '\n${practiceTime.substring(0, practiceTime.lastIndexOf(':'))} h';
+      statsText = Tooltip(
+        message: 'successful practices (success rate), practice time',
+        child: Text(statsString, textAlign: TextAlign.center),
+      );
     }
 
     final editButtons = Row(
@@ -115,10 +123,7 @@ class HomePage extends StatelessWidget {
     return ListTile(
       dense: true,
       visualDensity: VisualDensity(vertical: 4),
-      leading: SizedBox(
-        width: leadingWidth,
-        child: Text(successCountString, textAlign: TextAlign.center),
-      ),
+      leading: SizedBox(width: leadingWidth, child: statsText),
       title: Row(
         children: [
           Icon(config.icon, size: 32),
