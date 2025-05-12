@@ -13,36 +13,32 @@ void main() async {
   final fontLoader = FontLoader('StaffClefPitches');
   fontLoader.addFont(rootBundle.load('assets/fonts/staff_clef_pitches.ttf'));
   await fontLoader.load();
-
   const seedColor = Colors.pink;
+  final settings = SettingsProvider();
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => SessionsProvider()),
-        ChangeNotifierProvider(create: (context) => SettingsProvider()),
+        ChangeNotifierProvider.value(value: settings),
       ],
-      child: Consumer<SettingsProvider>(
-        builder:
-            (context, settings, child) => MaterialApp(
-              title: "Helma's Note Trainer",
-              theme: ThemeData(colorSchemeSeed: seedColor),
-              darkTheme: ThemeData(
-                colorSchemeSeed: seedColor,
-                brightness: Brightness.dark,
-              ),
-              supportedLocales: NoteLocalizations.supportedLanguages.map(
-                (language) => Locale(language),
-              ),
-              localizationsDelegates: [
-                NoteLocalizations.delegate,
-                GlobalMaterialLocalizations.delegate,
-                GlobalWidgetsLocalizations.delegate,
-                GlobalCupertinoLocalizations.delegate,
-              ],
-              locale:
-                  settings.language != null ? Locale(settings.language!) : null,
-              home: HomePage(),
-            ),
+      child: MaterialApp(
+        title: "Helma's Note Trainer",
+        theme: ThemeData(colorSchemeSeed: seedColor),
+        darkTheme: ThemeData(
+          colorSchemeSeed: seedColor,
+          brightness: Brightness.dark,
+        ),
+        supportedLocales: NoteLocalizations.supportedLanguages.map(
+          (language) => Locale(language),
+        ),
+        localizationsDelegates: [
+          NoteLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        locale: settings.language != null ? Locale(settings.language!) : null,
+        home: HomePage(),
       ),
     ),
   );
