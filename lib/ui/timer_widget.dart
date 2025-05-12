@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../utils/colors.dart';
+
 class PracticeTimer {
   final _stopwatch = Stopwatch()..start();
   Duration _carry = Duration.zero;
@@ -66,7 +68,7 @@ class _TimerWidgetState extends State<TimerWidget> {
     if (_timer == null) {
       return SizedBox();
     }
-    final color = _remainingSeconds <= 3 ? Colors.red : null;
+    final color = _remainingSeconds <= 3 ? getErrorColor(context) : null;
     return Row(
       children: [
         Text(_remainingSeconds.toString(), style: TextStyle(fontSize: 24.0)),

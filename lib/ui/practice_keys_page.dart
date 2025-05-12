@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 
 import '../models/session_config.dart';
 import '../providers/sessions_provider.dart';
+import '../utils/colors.dart';
 import '../utils/note_mapping.dart';
 import 'timer_widget.dart';
 
@@ -26,7 +27,7 @@ class _PracticeKeysPageState extends State<PracticeKeysPage> {
   late Note _questionNote;
   late List<NoteKey> _answerKeys;
   NoteKey? _correctKey;
-  Set<NoteKey> _incorrectKeys = {};
+  Set<NoteKey> _wrongKeys = {};
 
   final _timer = PracticeTimer();
   final _noteQueue = Queue<Note>();
@@ -84,7 +85,7 @@ class _PracticeKeysPageState extends State<PracticeKeysPage> {
       _questionNote = questionNote;
       _answerKeys = _shuffled([...choices.take(widget.config.numChoices)]);
       _correctKey = null;
-      _incorrectKeys = {};
+      _wrongKeys = {};
     });
   }
 
@@ -119,7 +120,7 @@ class _PracticeKeysPageState extends State<PracticeKeysPage> {
         () => _goToNextQuestion(),
       );
     } else {
-      setState(() => _incorrectKeys.add(tappedKey));
+      setState(() => _wrongKeys.add(tappedKey));
     }
   }
 
@@ -147,11 +148,12 @@ class _PracticeKeysPageState extends State<PracticeKeysPage> {
               alignment: WrapAlignment.center,
               children: [
                 ..._answerKeys.map((choice) {
-                  Color? buttonColor;
+                  Color? buttonColor = getSecondaryContainerColor(context);
                   if (_correctKey == choice) {
-                    buttonColor = Colors.green;
-                  } else if (_incorrectKeys.contains(choice)) {
-                    buttonColor = Colors.red;
+                    buttonColor = getCorrectColor(context);
+                  } else if (_wrongKeys.contains(choice)) {
+                    buttonColor = getWrongColor(context);
+                    ;
                   }
                   return Padding(
                     padding: const EdgeInsets.all(12),

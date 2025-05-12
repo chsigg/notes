@@ -13,6 +13,7 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../models/session_config.dart';
 import '../providers/sessions_provider.dart';
+import '../utils/colors.dart';
 import '../utils/note_mapping.dart';
 import 'timer_widget.dart';
 
@@ -67,7 +68,11 @@ class _PracticePlayPageState extends State<PracticePlayPage> {
   void _initAudioRecording() async {
     if (!await _audioRecorder.hasPermission()) {
       return setState(() {
-        _errorWidget = Icon(Icons.mic_off, color: Colors.red, size: 48);
+        _errorWidget = Icon(
+          Icons.mic_off,
+          color: getErrorColor(context),
+          size: 48,
+        );
       });
     }
     // Note: hasPermission() triggers an inactive/resumed state change.
@@ -207,7 +212,8 @@ class _PracticePlayPageState extends State<PracticePlayPage> {
       _timer.takeSeconds(),
     );
     final statusWidget = () {
-      final color = isCorrect ? Colors.green : Colors.red;
+      final color =
+          isCorrect ? getCorrectColor(context) : getWrongColor(context);
       if (isTuning) {
         final tune = exp(ln2 / 12 * semitonesOffset) * targetPitch;
         return SizedBox(

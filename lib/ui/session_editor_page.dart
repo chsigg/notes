@@ -4,6 +4,7 @@ import 'package:uuid/uuid.dart';
 
 import '../models/session_config.dart';
 import '../providers/sessions_provider.dart';
+import '../utils/colors.dart';
 import '../utils/note_mapping.dart';
 import '../utils/session_icons.dart';
 
@@ -125,7 +126,7 @@ class _SessionEditorPageState extends State<SessionEditorPage> {
     Function onTap,
     bool isSelected,
   ) {
-    final color = Theme.of(context).colorScheme.primaryContainer;
+    final color = getSecondaryContainerColor(context);
     return InkWell(
       onTap: () => setState(() => onTap()),
       child: Container(
@@ -226,7 +227,10 @@ class _SessionEditorPageState extends State<SessionEditorPage> {
       },
       builder: (state) {
         if (state.hasError) {
-          return Text(state.errorText!, style: TextStyle(color: Colors.red));
+          return Text(
+            state.errorText!,
+            style: TextStyle(color: getErrorColor(context)),
+          );
         }
         return SizedBox();
       },

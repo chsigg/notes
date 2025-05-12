@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../models/session_config.dart';
 import '../providers/sessions_provider.dart';
 import '../providers/settings_provider.dart';
+import '../utils/colors.dart';
 import '../utils/note_mapping.dart';
 
 import 'practice_keys_page.dart';
@@ -30,7 +31,9 @@ class HomePage extends StatelessWidget {
               onPressed: () => Navigator.of(dialogContext).pop(false),
             ),
             TextButton(
-              style: TextButton.styleFrom(foregroundColor: Colors.red),
+              style: TextButton.styleFrom(
+                foregroundColor: getErrorColor(context),
+              ),
               onPressed: () => Navigator.of(dialogContext).pop(true),
               child: const Text('Delete'),
             ),
