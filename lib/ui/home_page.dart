@@ -138,108 +138,100 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final settings = Provider.of<SettingsProvider>(context);
+    final isEditMode = settings.isEditMode;
+    final configs = Provider.of<SessionsProvider>(context).configs;
+    final appLanguage = Localizations.localeOf(context).languageCode;
     const double iconSize = 100;
-    return Consumer2<SessionsProvider, SettingsProvider>(
-      builder: (context, sessions, settings, child) {
-        final isEditMode = settings.isEditMode;
-        final appLanguage = Localizations.localeOf(context).languageCode;
-        return Scaffold(
-          appBar: AppBar(
-            leading: Text('♯♭', style: TextStyle(fontSize: 0)),
-            bottom: PreferredSize(
-              preferredSize: Size.square(iconSize),
+    return Scaffold(
+      appBar: AppBar(
+        leading: Text('♯♭', style: TextStyle(fontSize: 0)),
+        bottom: PreferredSize(
+          preferredSize: Size.square(iconSize),
+          child: Padding(
+            padding: EdgeInsets.only(bottom: 16),
+            child: Container(
+              height: iconSize,
+              width: iconSize,
+              decoration: BoxDecoration(
+                color: (ColorScheme scheme) {
+                  return switch (scheme.brightness) {
+                    Brightness.dark => scheme.onSurface,
+                    Brightness.light => scheme.surface,
+                  };
+                }(Theme.of(context).colorScheme),
+                shape: BoxShape.circle,
+              ),
               child: Padding(
-                padding: EdgeInsets.only(bottom: 16),
-                child: Container(
-                  height: iconSize,
-                  width: iconSize,
-                  decoration: BoxDecoration(
-                    color: (ColorScheme scheme) {
-                      return switch (scheme.brightness) {
-                        Brightness.dark => scheme.onSurface,
-                        Brightness.light => scheme.surface,
-                      };
-                    }(Theme.of(context).colorScheme),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.all(iconSize * 0.07),
-                    child: Image(image: AssetImage('assets/icons/icon.png')),
+                padding: EdgeInsets.all(iconSize * 0.07),
+                child: Image(image: AssetImage('assets/icons/icon.png')),
+              ),
+            ),
+          ),
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(isEditMode ? Icons.check : Icons.settings),
+            tooltip: isEditMode ? 'Done Editing' : 'Manage Sessions',
+            onPressed: () => settings.isEditMode = !isEditMode,
+          ),
+          IconButton(
+            icon: const Icon(Icons.info_outline),
+            tooltip: 'Show Licenses',
+            onPressed: () {
+              showLicensePage(context: context);
+            },
+          ),
+          SizedBox(width: 8),
+        ],
+      ),
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 600),
+          child: Column(
+            children: [
+              Expanded(
+                child: Center(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: configs.length + (isEditMode ? 1 : 0),
+                    itemBuilder: (context, index) {
+                      return _buildItem(context, index, configs, isEditMode);
+                    },
                   ),
                 ),
               ),
-            ),
-            actions: [
-              IconButton(
-                icon: Icon(isEditMode ? Icons.check : Icons.settings),
-                tooltip: isEditMode ? 'Done Editing' : 'Manage Sessions',
-                onPressed: () => settings.isEditMode = !isEditMode,
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child:
+                    isEditMode
+                        ? SegmentedButton<String>(
+                          segments: [
+                            ...NoteLocalizations.supportedLanguages.map(
+                              (language) => ButtonSegment<String>(
+                                value: language,
+                                label: Text(language),
+                              ),
+                            ),
+                          ],
+                          emptySelectionAllowed: true,
+                          showSelectedIcon: settings.language != null,
+                          selected: {settings.language ?? appLanguage},
+                          onSelectionChanged: (selection) {
+                            settings.language =
+                                selection.isNotEmpty
+                                    ? selection.first
+                                    : settings.language == null
+                                    ? appLanguage
+                                    : null;
+                          },
+                        )
+                        : SizedBox(height: 80),
               ),
-              IconButton(
-                icon: const Icon(Icons.info_outline),
-                tooltip: 'Show Licenses',
-                onPressed: () {
-                  showLicensePage(context: context);
-                },
-              ),
-              SizedBox(width: 8),
             ],
           ),
-          body: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 600),
-              child: Column(
-                children: [
-                  Expanded(
-                    child: Center(
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        itemCount:
-                            sessions.configs.length + (isEditMode ? 1 : 0),
-                        itemBuilder: (context, index) {
-                          return _buildItem(
-                            context,
-                            index,
-                            sessions.configs,
-                            isEditMode,
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(16),
-                    child:
-                        isEditMode
-                            ? SegmentedButton<String>(
-                              segments: [
-                                ...NoteLocalizations.supportedLanguages.map(
-                                  (language) => ButtonSegment<String>(
-                                    value: language,
-                                    label: Text(language),
-                                  ),
-                                ),
-                              ],
-                              emptySelectionAllowed: true,
-                              showSelectedIcon: settings.language != null,
-                              selected: {settings.language ?? appLanguage},
-                              onSelectionChanged: (selection) {
-                                settings.language =
-                                    selection.isNotEmpty
-                                        ? selection.first
-                                        : settings.language == null
-                                        ? appLanguage
-                                        : null;
-                              },
-                            )
-                            : SizedBox(height: 80),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
+        ),
+      ),
     );
   }
 }
