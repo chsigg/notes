@@ -47,13 +47,13 @@ class SessionsProvider with ChangeNotifier {
     _saveConfigs();
   }
 
-  void incrementSessionStats(String sessionId, bool successful, Duration time) {
+  void incrementSessionStats(String sessionId, bool successful, int seconds) {
     final index = _configs.indexWhere((c) => c.id == sessionId);
     if (index == -1) return;
 
     _configs[index].practicedTests += 1;
     _configs[index].successfulTests += successful ? 1 : 0;
-    _configs[index].totalPracticeTime += time;
+    _configs[index].totalPracticeTime += Duration(seconds: seconds);
     notifyListeners();
     _saveConfigs();
   }

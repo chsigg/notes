@@ -38,6 +38,7 @@ class _PracticePlayPageState extends State<PracticePlayPage> {
   StreamSubscription<double>? _pitchSubscription;
   AppLifecycleListener? _listener;
 
+  final _timer = PracticeTimer();
   final _audioRecorder = AudioRecorder();
   final _notesQueue = Queue<Note>();
   final Random _random = Random();
@@ -55,6 +56,7 @@ class _PracticePlayPageState extends State<PracticePlayPage> {
 
   @override
   void dispose() {
+    _timer.dispose();
     _answerTimer.cancel();
     _listener?.dispose();
     _stopAudioRecording().then((_) => _audioRecorder.dispose());
@@ -159,7 +161,6 @@ class _PracticePlayPageState extends State<PracticePlayPage> {
     final note = _notesQueue.removeFirst();
     setState(() {
       _timerWidget = TimerWidget(
-        key: UniqueKey(),
         timeSeconds: _aPitch != null ? widget.config.timeLimitSeconds : 0,
         onTimerEnd: _onTimerEnd,
       );
@@ -178,7 +179,7 @@ class _PracticePlayPageState extends State<PracticePlayPage> {
     sessions.incrementSessionStats(
       widget.config.id,
       false,
-      _timerWidget.elapsed,
+      _timer.takeSeconds(),
     );
     _goToNextQuestion();
   }
@@ -203,7 +204,7 @@ class _PracticePlayPageState extends State<PracticePlayPage> {
     sessions.incrementSessionStats(
       widget.config.id,
       isCorrect,
-      _timerWidget.elapsed,
+      _timer.takeSeconds(),
     );
     final statusWidget = () {
       final color = isCorrect ? Colors.green : Colors.red;

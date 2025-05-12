@@ -110,7 +110,7 @@ class _SessionEditorPageState extends State<SessionEditorPage> {
         constraints: const BoxConstraints(maxWidth: 400),
         child: Wrap(children: iconWidgets),
       ),
-      actions: <Widget>[
+      actions: [
         TextButton(
           child: const Text('Cancel'),
           onPressed: () => Navigator.of(context).pop(null),
@@ -245,6 +245,7 @@ class _SessionEditorPageState extends State<SessionEditorPage> {
             tooltip: 'Save Session',
             onPressed: _saveSession,
           ),
+          SizedBox(width: 8),
         ],
       ),
       body: Align(

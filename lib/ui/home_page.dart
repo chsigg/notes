@@ -182,7 +182,7 @@ class HomePage extends StatelessWidget {
                   showLicensePage(context: context);
                 },
               ),
-              SizedBox(width: 16),
+              SizedBox(width: 8),
             ],
           ),
           body: Center(

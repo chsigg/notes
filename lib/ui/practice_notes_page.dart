@@ -28,6 +28,7 @@ class _PracticeNotesPageState extends State<PracticeNotesPage> {
   Note? _correctNote;
   Set<Note> _incorrectNotes = {};
 
+  final _timer = PracticeTimer();
   final _keyQueue = Queue<NoteKey>();
   final Random _random = Random();
 
@@ -39,6 +40,7 @@ class _PracticeNotesPageState extends State<PracticeNotesPage> {
 
   @override
   void dispose() {
+    _timer.dispose();
     _nextQuestionTimer?.cancel();
     super.dispose();
   }
@@ -70,7 +72,6 @@ class _PracticeNotesPageState extends State<PracticeNotesPage> {
 
     setState(() {
       _timerWidget = TimerWidget(
-        key: UniqueKey(),
         timeSeconds: widget.config.timeLimitSeconds,
         onTimerEnd: _onTimerEnd,
       );
@@ -91,7 +92,7 @@ class _PracticeNotesPageState extends State<PracticeNotesPage> {
     sessions.incrementSessionStats(
       widget.config.id,
       false,
-      _timerWidget.elapsed,
+      _timer.takeSeconds(),
     );
     _goToNextQuestion();
   }
@@ -105,7 +106,7 @@ class _PracticeNotesPageState extends State<PracticeNotesPage> {
     sessions.incrementSessionStats(
       widget.config.id,
       isCorrect,
-      _timerWidget.elapsed,
+      _timer.takeSeconds(),
     );
     if (isCorrect) {
       setState(() => _correctNote = tappedNote);
