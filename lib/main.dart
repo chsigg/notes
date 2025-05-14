@@ -1,9 +1,8 @@
-import 'package:flutter_web_plugins/flutter_web_plugins.dart';
-
 import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:notes/models/session_config.dart';
 import 'package:provider/provider.dart';
 
