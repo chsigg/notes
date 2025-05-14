@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:notes/providers/settings_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
@@ -58,23 +60,46 @@ class _SessionEditorPageState extends State<SessionEditorPage> {
     super.dispose();
   }
 
-  void _saveSession() {
-    if (_formKey.currentState!.validate()) {
-      final config = SessionConfig(
-        id: widget.config.id,
-        title: _titleController.text.trim(),
-        icon: _selectedIconData,
-        type: _selectedType,
-        keys: [..._selectedKeys],
-        notes: [..._selectedNotes],
-        timeLimitSeconds: int.tryParse(_timeLimitController.text) ?? 0,
-        practicedTests: widget.config.practicedTests,
-        successfulTests: widget.config.successfulTests,
-      );
-      final sessions = Provider.of<SessionsProvider>(context, listen: false);
-      sessions.updateConfig(config);
-      Navigator.pop(context);
+  SessionConfig? _getSession() {
+    if (!_formKey.currentState!.validate()) {
+      return null;
     }
+    return SessionConfig(
+      id: widget.config.id,
+      title: _titleController.text.trim(),
+      icon: _selectedIconData,
+      type: _selectedType,
+      keys: [..._selectedKeys],
+      notes: [..._selectedNotes],
+      timeLimitSeconds: int.tryParse(_timeLimitController.text) ?? 0,
+      practicedTests: widget.config.practicedTests,
+      successfulTests: widget.config.successfulTests,
+    );
+  }
+
+  void _saveSession() {
+    final config = _getSession();
+    if (config == null) return;
+    final sessions = Provider.of<SessionsProvider>(context, listen: false);
+    sessions.updateConfig(config);
+    Navigator.pop(context);
+  }
+
+  void _shareSession() {
+    final config = _getSession();
+    if (config == null) return;
+    final uri = Uri.parse('https://csigg.com/notes').replace(
+      queryParameters: {
+        'session': config.toBase64(),
+        'lang': Provider.of<SettingsProvider>(context, listen: false).language,
+      },
+    );
+    final messenger = ScaffoldMessenger.of(context);
+    Clipboard.setData(ClipboardData(text: uri.toString())).then((_) {
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Session link copied to clipboard!')),
+      );
+    });
   }
 
   void _pickIcon() async {
@@ -244,6 +269,12 @@ class _SessionEditorPageState extends State<SessionEditorPage> {
         title: Text('Edit Session'),
         centerTitle: true,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.share),
+            tooltip: 'Share Session',
+            onPressed: _shareSession,
+          ),
+          SizedBox(width: 8),
           IconButton(
             icon: const Icon(Icons.save),
             tooltip: 'Save Session',

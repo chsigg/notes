@@ -99,9 +99,7 @@ class _PracticeNotesPageState extends State<PracticeNotesPage> {
   }
 
   void _handleAnswerTap(Note tappedNote) {
-    if (_correctNote != null) {
-      return;
-    }
+    if (_correctNote != null) return;
     final isCorrect = tappedNote == getNoteFromKey(_questionKey);
     final sessions = Provider.of<SessionsProvider>(context, listen: false);
     sessions.incrementSessionStats(

@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:archive/archive.dart';
 import 'package:flutter/material.dart';
 
 import '../utils/note_mapping.dart';
@@ -65,6 +68,21 @@ class SessionConfig {
       'successfulTests': successfulTests,
       'totalPracticeTime': totalPracticeTime.inSeconds,
     };
+  }
+
+  factory SessionConfig.fromBase64(String base64) {
+    final jsonString = utf8.decode(
+      GZipDecoder().decodeBytes(base64Url.decode(base64)),
+    );
+    return SessionConfig.fromJson(
+      jsonDecode(jsonString) as Map<String, dynamic>,
+    );
+  }
+
+  String toBase64() {
+    return base64Url.encode(
+      GZipEncoder().encodeBytes(utf8.encode(jsonEncode(toJson()))),
+    );
   }
 
   static Map<String, dynamic> _iconToJsonManual(IconData icon) {

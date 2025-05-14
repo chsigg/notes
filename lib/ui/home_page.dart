@@ -188,50 +188,52 @@ class HomePage extends StatelessWidget {
           SizedBox(width: 8),
         ],
       ),
-      body: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 600),
-          child: Column(
-            children: [
-              Expanded(
-                child: Center(
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: configs.length + (isEditMode ? 1 : 0),
-                    itemBuilder: (context, index) {
-                      return _buildItem(context, index, configs, isEditMode);
-                    },
+      body: SafeArea(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 600),
+            child: Column(
+              children: [
+                Expanded(
+                  child: Center(
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: configs.length + (isEditMode ? 1 : 0),
+                      itemBuilder: (context, index) {
+                        return _buildItem(context, index, configs, isEditMode);
+                      },
+                    ),
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child:
-                    isEditMode
-                        ? SegmentedButton<String>(
-                          segments: [
-                            ...NoteLocalizations.supportedLanguages.map(
-                              (language) => ButtonSegment<String>(
-                                value: language,
-                                label: Text(language),
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child:
+                      isEditMode
+                          ? SegmentedButton<String>(
+                            segments: [
+                              ...NoteLocalizations.supportedLanguages.map(
+                                (language) => ButtonSegment<String>(
+                                  value: language,
+                                  label: Text(language),
+                                ),
                               ),
-                            ),
-                          ],
-                          emptySelectionAllowed: true,
-                          showSelectedIcon: settings.language != null,
-                          selected: {settings.language ?? appLanguage},
-                          onSelectionChanged: (selection) {
-                            settings.language =
-                                selection.isNotEmpty
-                                    ? selection.first
-                                    : settings.language == null
-                                    ? appLanguage
-                                    : null;
-                          },
-                        )
-                        : SizedBox(height: 80),
-              ),
-            ],
+                            ],
+                            emptySelectionAllowed: true,
+                            showSelectedIcon: settings.language != null,
+                            selected: {settings.language ?? appLanguage},
+                            onSelectionChanged: (selection) {
+                              settings.language =
+                                  selection.isNotEmpty
+                                      ? selection.first
+                                      : settings.language == null
+                                      ? appLanguage
+                                      : null;
+                            },
+                          )
+                          : SizedBox(height: 80),
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -6,28 +6,25 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/session_config.dart';
 
 class SessionsProvider with ChangeNotifier {
-  List<SessionConfig> _configs = [];
+  final List<SessionConfig> _configs;
   static const _configsPrefKey = 'sessions_configs_v3';
 
-  List<SessionConfig> get configs => _configs;
+  SessionsProvider._create(this._configs);
 
-  SessionsProvider() {
-    _loadConfigs();
-  }
+  List<SessionConfig> get configs => [..._configs];
 
-  void _loadConfigs() async {
+  static Future<SessionsProvider> load() async {
     final prefs = await SharedPreferences.getInstance();
     final jsonString = prefs.getString(_configsPrefKey);
-    if (jsonString == null || jsonString.isEmpty) {
-      _configs = SessionConfig.getDefaultConfigs();
-    } else {
-      _configs = [
-        ...(jsonDecode(jsonString) as List).map((json) {
-          return SessionConfig.fromJson(json as Map<String, dynamic>);
-        }),
-      ];
+    final configs = <SessionConfig>[];
+    if (jsonString != null) {
+      configs.addAll(
+        (jsonDecode(jsonString) as List).map(
+          (json) => SessionConfig.fromJson(json as Map<String, dynamic>),
+        ),
+      );
     }
-    notifyListeners();
+    return SessionsProvider._create(configs);
   }
 
   void updateConfig(SessionConfig config) {

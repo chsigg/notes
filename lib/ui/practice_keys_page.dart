@@ -105,9 +105,7 @@ class _PracticeKeysPageState extends State<PracticeKeysPage> {
   }
 
   void _handleAnswerTap(NoteKey tappedKey) {
-    if (_correctKey != null) {
-      return;
-    }
+    if (_correctKey != null) return;
     final isCorrect = getNoteFromKey(tappedKey) == _questionNote;
     Provider.of<SessionsProvider>(
       context,
@@ -153,7 +151,6 @@ class _PracticeKeysPageState extends State<PracticeKeysPage> {
                     buttonColor = getCorrectColor(context);
                   } else if (_wrongKeys.contains(choice)) {
                     buttonColor = getWrongColor(context);
-                    ;
                   }
                   return Padding(
                     padding: const EdgeInsets.all(12),

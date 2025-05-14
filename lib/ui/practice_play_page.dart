@@ -190,9 +190,7 @@ class _PracticePlayPageState extends State<PracticePlayPage> {
   }
 
   void _handlePitch(double pitch) {
-    if (_answerTimer.isActive) {
-      return;
-    }
+    if (_answerTimer.isActive) return;
     final targetPitch = _aPitch ?? 440.0;
     final playedInteger = 9 + 12 / ln2 * log(pitch / targetPitch);
     final targetInteger = getIntegerFromNote(_questionNote);

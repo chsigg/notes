@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../utils/note_mapping.dart';
+
 class SettingsProvider with ChangeNotifier {
   bool _isEditMode = false;
   String? _language;
@@ -8,18 +10,17 @@ class SettingsProvider with ChangeNotifier {
   static const _isEditModePrefKey = 'is_edit_mode';
   static const _languagePrefKey = 'language';
 
-  SettingsProvider() {
-    _loadSettings();
-  }
+  SettingsProvider._create(this._isEditMode, this._language);
 
-  void _loadSettings() async {
+  static Future<SettingsProvider> load() async {
     final prefs = await SharedPreferences.getInstance();
-    _isEditMode = prefs.getBool(_isEditModePrefKey) ?? false;
-    _language = prefs.getString(_languagePrefKey);
-    notifyListeners();
+    final isEditMode = prefs.getBool(_isEditModePrefKey) ?? false;
+    final language = prefs.getString(_languagePrefKey);
+    return SettingsProvider._create(isEditMode, language);
   }
 
   bool get isEditMode => _isEditMode;
+
   String? get language => _language;
 
   set isEditMode(bool value) {
@@ -29,6 +30,7 @@ class SettingsProvider with ChangeNotifier {
   }
 
   set language(String? language) {
+    assert(NoteLocalizations.supportedLanguages.contains(language ?? 'en'));
     _language = language;
     notifyListeners();
     _saveSettings();
