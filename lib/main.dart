@@ -21,7 +21,8 @@ void main() async {
   final settings = await SettingsProvider.load();
   final sessions = await SessionsProvider.load();
 
-  void handleUri(Uri uri) {
+  void handleUri(Uri? uri) {
+    if (uri == null) return;
     uri.queryParametersAll['lang']?.forEach((lang) => settings.language = lang);
     uri.queryParametersAll['session']?.forEach(
       (base64) => sessions.updateConfig(SessionConfig.fromBase64(base64)),
@@ -29,15 +30,12 @@ void main() async {
   }
 
   final appLinks = AppLinks();
-  final uri = await appLinks.getInitialLink();
-  if (uri != null) {
-    handleUri(uri);
-    PathUrlStrategy().pushState(null, '', uri.path);
-  }
+  handleUri(await appLinks.getInitialLink());
+  PathUrlStrategy().replaceState(null, '', '/');
   if (sessions.configs.isEmpty) {
     SessionConfig.getDefaultConfigs().forEach(sessions.updateConfig);
   }
-  final subscription = appLinks.uriLinkStream.listen(handleUri);
+  appLinks.uriLinkStream.listen(handleUri);
 
   const seedColor = Colors.pink;
   runApp(
@@ -71,6 +69,4 @@ void main() async {
       ),
     ),
   );
-
-  subscription.cancel();
 }

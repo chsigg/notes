@@ -173,7 +173,7 @@ List<NoteKey> getMiddleTrebleKeys() {
 }
 
 List<NoteKey> getAllBassKeys() {
-  return [...getAllKeys().where((key) => key.clef == Clef.treble)];
+  return [...getAllKeys().where((key) => key.clef == Clef.bass)];
 }
 
 // Gets the glyphs for a given note.

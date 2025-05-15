@@ -1,7 +1,7 @@
 {
   "name": "Helma's Note Trainer",
   "short_name": "Helma's Note Trainer",
-  "start_url": "/notes/",
+  "start_url": "./",
   "display": "standalone",
   "description": "Application to practice the names of music notes.",
   "orientation": "portrait-primary",
