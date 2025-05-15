@@ -88,10 +88,11 @@ class _SessionEditorPageState extends State<SessionEditorPage> {
   void _shareSession() {
     final config = _getSession();
     if (config == null) return;
+    final lang = Provider.of<SettingsProvider>(context, listen: false).language;
     final uri = Uri.parse('https://csigg.com/notes').replace(
       queryParameters: {
         'session': config.toBase64(),
-        'lang': Provider.of<SettingsProvider>(context, listen: false).language,
+        if (lang != null) 'lang': lang,
       },
     );
     final messenger = ScaffoldMessenger.of(context);

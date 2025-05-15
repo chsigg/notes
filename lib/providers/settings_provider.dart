@@ -30,7 +30,10 @@ class SettingsProvider with ChangeNotifier {
   }
 
   set language(String? language) {
-    assert(NoteLocalizations.supportedLanguages.contains(language ?? 'en'));
+    if (language != null &&
+        !NoteLocalizations.supportedLanguages.contains(language)) {
+      return;
+    }
     _language = language;
     notifyListeners();
     _saveSettings();
