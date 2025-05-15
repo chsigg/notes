@@ -75,8 +75,6 @@ class HomePage extends StatelessWidget {
     List<SessionConfig> configs,
     bool isEditMode,
   ) {
-    const double leadingWidth = 64;
-
     if (index == configs.length) {
       return ListTile(
         trailing: IconButton(
@@ -126,12 +124,18 @@ class HomePage extends StatelessWidget {
     return ListTile(
       dense: true,
       visualDensity: VisualDensity(vertical: 4),
-      leading: SizedBox(width: leadingWidth, child: statsText),
+      leading: SizedBox(width: 64, child: statsText),
       title: Row(
         children: [
           Icon(config.icon, size: 32),
           SizedBox(width: 16),
-          Text(config.title),
+          Expanded(
+            child: Text(
+              config.title,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
         ],
       ),
       onTap: () => _practiceSession(context, config),
