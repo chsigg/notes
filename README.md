@@ -18,7 +18,7 @@ See it in action at https://csigg.com/notes/.
 
 # Manual
 
-1\. Getting Started
+### 1\. Getting Started
 
 - **What is the Note Trainer App?** The Note Trainer App provides interactive exercises to help you
   recognize musical notes on the staff and their corresponding names. You can create custom practice
@@ -28,7 +28,7 @@ See it in action at https://csigg.com/notes/.
   on the gear icon at the top right to add/remove or edit sessions. Tap on a session in the list to
   start practicing.
 
-2\. Practice Sessions
+### 2\. Practice Sessions
 
 - **Understanding Session Types** The app offers different types of practice to target specific
   skills:
@@ -62,7 +62,7 @@ See it in action at https://csigg.com/notes/.
 
 These stats help you track your progress over time.
 
-3\. Edit Sessions
+### 3\. Edit Sessions
 
 Tap the gear icon in the top right to manage your sessions. Here, you can select the language for
 note names at the bottom. Use the green plus icon to add a new session, the trash icon to remove
