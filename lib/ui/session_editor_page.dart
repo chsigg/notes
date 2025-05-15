@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:notes/providers/settings_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:uuid/uuid.dart';
 
 import '../models/session_config.dart';
 import '../providers/sessions_provider.dart';
@@ -17,7 +16,6 @@ class SessionEditorPage extends StatefulWidget {
     : config =
           config ??
           SessionConfig(
-            id: const Uuid().v4(),
             title: 'New Session',
             icon: Icons.music_note,
             type: SessionType.notes,

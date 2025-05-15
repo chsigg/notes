@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:archive/archive.dart';
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
 
 import '../utils/note_mapping.dart';
 import '../utils/session_icons.dart';
@@ -28,7 +29,7 @@ class SessionConfig {
   Duration totalPracticeTime;
 
   SessionConfig({
-    required this.id,
+    String? id,
     required this.title,
     required this.icon,
     required this.type,
@@ -38,7 +39,7 @@ class SessionConfig {
     this.practicedTests = 0,
     this.successfulTests = 0,
     this.totalPracticeTime = Duration.zero,
-  });
+  }) : id = id ?? Uuid().v4();
 
   factory SessionConfig.fromJson(Map<String, dynamic> json) {
     return SessionConfig(
@@ -106,7 +107,6 @@ class SessionConfig {
   static List<SessionConfig> getDefaultConfigs() {
     return [
       SessionConfig(
-        id: '1',
         title: 'Treble Names',
         icon: SessionIcons.trebleIcon,
         type: SessionType.notes,
@@ -114,7 +114,6 @@ class SessionConfig {
         notes: getAllNotes(),
       ),
       SessionConfig(
-        id: '2',
         title: 'Bass Names',
         icon: SessionIcons.bassIcon,
         type: SessionType.notes,
@@ -122,7 +121,6 @@ class SessionConfig {
         notes: getAllNotes(),
       ),
       SessionConfig(
-        id: '3',
         title: 'All Notes',
         icon: Icons.music_note,
         type: SessionType.keys,
@@ -130,7 +128,6 @@ class SessionConfig {
         notes: getAllNotes(),
       ),
       SessionConfig(
-        id: '4',
         title: 'Play',
         icon: Icons.mic,
         type: SessionType.play,
