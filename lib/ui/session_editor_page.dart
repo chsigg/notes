@@ -76,9 +76,6 @@ class _SessionEditorPageState extends State<SessionEditorPage> {
   void _saveSession() {
     final config = _getSession();
     if (config == null) return;
-    config.practicedTests = widget.config.practicedTests;
-    config.successfulTests = widget.config.successfulTests;
-    config.totalPracticeTime = widget.config.totalPracticeTime;
     final sessions = Provider.of<SessionsProvider>(context, listen: false);
     sessions.updateConfig(config);
     Navigator.pop(context);

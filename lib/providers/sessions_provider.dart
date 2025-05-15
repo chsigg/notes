@@ -30,7 +30,10 @@ class SessionsProvider with ChangeNotifier {
   void updateConfig(SessionConfig config) {
     final index = _configs.indexWhere((c) => c.id == config.id);
     if (index != -1) {
-      _configs[index] = config; // Update existing config
+      config.practicedTests = configs[index].practicedTests;
+      config.successfulTests = configs[index].successfulTests;
+      config.totalPracticeTime = configs[index].totalPracticeTime;
+      _configs[index] = config; // Merge with existing config
     } else {
       _configs.add(config); // Add new config if not found
     }
