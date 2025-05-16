@@ -7,6 +7,7 @@ import '../providers/settings_provider.dart';
 import '../utils/colors.dart';
 import '../utils/note_mapping.dart';
 
+import 'manual_page.dart';
 import 'practice_keys_page.dart';
 import 'practice_notes_page.dart';
 import 'practice_play_page.dart';
@@ -178,16 +179,20 @@ class HomePage extends StatelessWidget {
         ),
         actions: [
           IconButton(
+            icon: const Icon(Icons.help_outline),
+            tooltip: 'Show Manual',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ManualPage()),
+              );
+            },
+          ),
+          SizedBox(width: 8),
+          IconButton(
             icon: Icon(isEditMode ? Icons.check : Icons.settings),
             tooltip: isEditMode ? 'Done Editing' : 'Manage Sessions',
             onPressed: () => settings.isEditMode = !isEditMode,
-          ),
-          IconButton(
-            icon: const Icon(Icons.info_outline),
-            tooltip: 'Show Licenses',
-            onPressed: () {
-              showLicensePage(context: context);
-            },
           ),
           SizedBox(width: 8),
         ],
