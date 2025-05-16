@@ -153,7 +153,16 @@ class HomePage extends StatelessWidget {
     const double iconSize = 100;
     return Scaffold(
       appBar: AppBar(
-        leading: Text('♯♭', style: TextStyle(fontSize: 0)),
+        leading: IconButton(
+          icon: const Icon(Icons.help_outline),
+          tooltip: 'Show Manual',
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ManualPage()),
+            );
+          },
+        ),
         bottom: PreferredSize(
           preferredSize: Size.square(iconSize),
           child: Padding(
@@ -178,16 +187,7 @@ class HomePage extends StatelessWidget {
           ),
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.help_outline),
-            tooltip: 'Show Manual',
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ManualPage()),
-              );
-            },
-          ),
+          Text('♯♭', style: TextStyle(fontSize: 0)),
           IconButton(
             icon: Icon(isEditMode ? Icons.check : Icons.settings),
             tooltip: isEditMode ? 'Done Editing' : 'Manage Sessions',
