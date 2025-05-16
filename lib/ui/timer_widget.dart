@@ -71,9 +71,9 @@ class _TimerWidgetState extends State<TimerWidget> {
     final color = _remainingSeconds <= 3 ? getErrorColor(context) : null;
     return Row(
       children: [
-        Text(_remainingSeconds.toString(), style: TextStyle(fontSize: 24.0)),
+        Text(_remainingSeconds.toString(), style: TextStyle(fontSize: 20.0)),
         SizedBox(width: 8),
-        Icon(Icons.timer_outlined, size: 32, color: color),
+        Icon(Icons.timer_outlined, color: color),
         SizedBox(width: 8),
       ],
     );

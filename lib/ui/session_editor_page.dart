@@ -271,7 +271,6 @@ class _SessionEditorPageState extends State<SessionEditorPage> {
             tooltip: 'Share Session',
             onPressed: _shareSession,
           ),
-          SizedBox(width: 8),
           IconButton(
             icon: const Icon(Icons.save),
             tooltip: 'Save Session',

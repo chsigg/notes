@@ -188,7 +188,6 @@ class HomePage extends StatelessWidget {
               );
             },
           ),
-          SizedBox(width: 8),
           IconButton(
             icon: Icon(isEditMode ? Icons.check : Icons.settings),
             tooltip: isEditMode ? 'Done Editing' : 'Manage Sessions',

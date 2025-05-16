@@ -88,7 +88,7 @@ This web site is a progressive web app (PWA) which can be downloaded to your dev
 app. The procedure to do that depends on your device.
 
     - **Android**: 'Press the "three dots" icon at the top right, select "Add to Home screen" from 
-      the menu and press "Add".
+      the menu and press "Install" twice.
     - **iOS**: Press the "Share" button at the bottom, select "Add to Home Screen" from the menu and
       press "Add".
 

@@ -155,7 +155,7 @@ class ManualPage extends StatelessWidget {
                 _manualEntry(' icon at the top right, select '),
                 WidgetSpan(child: Icon(Icons.add_to_home_screen, size: 16)),
                 _manualEntry(
-                  ' "Add to Home screen" from the menu and press "Add".\n',
+                  ' "Add to Home screen" from the menu and press "Install" twice.\n',
                 ),
                 _manualEntry(bold: '    • iOS: ', 'Press the '),
                 WidgetSpan(child: Icon(Icons.ios_share, size: 16)),
