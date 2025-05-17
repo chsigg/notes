@@ -125,11 +125,7 @@ class _PracticeKeysPageState extends State<PracticeKeysPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.config.title),
-        centerTitle: true,
-        actions: [_timerWidget],
-      ),
+      appBar: makeAppBar(widget.config, _timerWidget),
       body: Center(
         child: ListView(
           shrinkWrap: true,

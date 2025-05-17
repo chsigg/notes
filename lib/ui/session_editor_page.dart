@@ -264,7 +264,6 @@ class _SessionEditorPageState extends State<SessionEditorPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Edit Session'),
-        centerTitle: true,
         actions: [
           IconButton(
             icon: const Icon(Icons.share),

@@ -22,7 +22,6 @@ class ManualPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Manual'),
-        centerTitle: true,
         actions: [
           IconButton(
             icon: const Icon(Icons.info_outline),

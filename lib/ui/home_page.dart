@@ -123,7 +123,6 @@ class HomePage extends StatelessWidget {
     );
 
     return ListTile(
-      dense: true,
       visualDensity: VisualDensity(vertical: 4),
       leading: SizedBox(width: 64, child: statsText),
       title: Row(

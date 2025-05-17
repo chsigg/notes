@@ -33,7 +33,12 @@ void main() async {
   }
   appLinks.uriLinkStream.listen(handleUri);
 
-  const seedColor = Colors.pink;
+  ThemeData themeData(Brightness brightness) => ThemeData(
+    colorSchemeSeed: Colors.pink,
+    appBarTheme: AppBarTheme(centerTitle: true),
+    brightness: brightness,
+  );
+
   runApp(
     MultiProvider(
       providers: [
@@ -44,11 +49,8 @@ void main() async {
         builder:
             (context, settings, child) => MaterialApp(
               title: "Helma's Note Trainer",
-              theme: ThemeData(colorSchemeSeed: seedColor),
-              darkTheme: ThemeData(
-                colorSchemeSeed: seedColor,
-                brightness: Brightness.dark,
-              ),
+              theme: themeData(Brightness.light),
+              darkTheme: themeData(Brightness.dark),
               supportedLocales: NoteLocalizations.supportedLanguages.map(
                 (language) => Locale(language),
               ),

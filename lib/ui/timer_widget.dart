@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:notes/models/session_config.dart';
 
 import '../utils/colors.dart';
 
@@ -92,3 +93,12 @@ class _TimerWidgetState extends State<TimerWidget> {
     }
   }
 }
+
+AppBar makeAppBar(SessionConfig config, TimerWidget timer) => AppBar(
+  title: Row(
+    mainAxisAlignment: MainAxisAlignment.center,
+    mainAxisSize: MainAxisSize.min,
+    children: [Icon(config.icon), SizedBox(width: 16), Text(config.title)],
+  ),
+  actions: [timer],
+);

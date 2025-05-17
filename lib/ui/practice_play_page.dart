@@ -242,11 +242,7 @@ class _PracticePlayPageState extends State<PracticePlayPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.config.title),
-        centerTitle: true,
-        actions: [_timerWidget],
-      ),
+      appBar: makeAppBar(widget.config, _timerWidget),
       body: Center(
         child:
             _errorWidget ??
