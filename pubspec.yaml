@@ -37,6 +37,7 @@ dependencies:
 
   app_links: ^6.4.0
   archive: ^4.0.7
+  cupertino_icons: ^1.0.8
   pitch_detector_dart: ^0.0.7
   provider: ^6.1.5
   record: ^6.0.0
@@ -96,7 +97,6 @@ flutter:
   # https://flutter.dev/to/asset-from-package
   assets:
     - assets/icons/icon.png
-    - assets/fonts/staff_clef_pitches.ttf
 
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a
@@ -117,3 +117,7 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+  fonts:
+    - family: StaffClefPitches
+      fonts:
+        - asset: assets/fonts/staff_clef_pitches.ttf

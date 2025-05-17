@@ -89,8 +89,7 @@ class SessionConfig {
   static Map<String, dynamic> _iconToJsonManual(IconData icon) {
     return {
       'codePoint': icon.codePoint,
-      'fontFamily': icon.fontFamily,
-      'fontPackage': icon.fontPackage,
+      if (icon.fontFamily != null) 'fontFamily': icon.fontFamily,
     };
   }
 
@@ -98,9 +97,8 @@ class SessionConfig {
     return SessionIcons.allIcons.firstWhere(
       (icon) =>
           icon.codePoint == json['codePoint'] &&
-          icon.fontFamily == json['fontFamily'] &&
-          icon.fontPackage == json['fontPackage'],
-      orElse: () => Icons.music_note,
+          icon.fontFamily == json['fontFamily'],
+      orElse: () => Icons.question_mark,
     );
   }
 
@@ -122,7 +120,7 @@ class SessionConfig {
       ),
       SessionConfig(
         title: 'All Notes',
-        icon: Icons.music_note,
+        icon: Icons.star,
         type: SessionType.keys,
         keys: getAllKeys(),
         notes: getAllNotes(),

@@ -4,19 +4,23 @@ import 'package:flutter/material.dart';
 class SessionIcons {
   SessionIcons._();
 
-  static const trebleIcon = IconData(0x026, fontFamily: 'StaffClefPitches');
-  static const bassIcon = IconData(0x03F, fontFamily: 'StaffClefPitches');
+  static const trebleIcon = IconData(0x1d11e); // 𝄞
+  static const bassIcon = IconData(0x1d122); // 𝄢
 
   static const allIcons = [
     trebleIcon,
     bassIcon,
-    Icons.music_note,
+    IconData(0x1d10b), // 𝄋
+    IconData(0x1d13d), // 𝄽
+    IconData(0x0266d), // ♭
+    IconData(0x0266f), // ♯
+    IconData(0x1d15f), // 𝅘𝅥
+    IconData(0x1d160), // 𝅘𝅥𝅮
     Icons.piano,
-    Icons.change_history,
     Icons.campaign,
     Icons.sports,
     Icons.mic,
-    Icons.volume_up,
+    Icons.change_history,
     Icons.favorite_border,
     Icons.mood,
     Icons.face_2,
@@ -24,9 +28,7 @@ class SessionIcons {
     Icons.face_4,
     Icons.face,
     Icons.face_6,
-    Icons.face_5,
     Icons.rocket_launch,
-    Icons.flutter_dash,
     Icons.anchor,
     Icons.star,
     Icons.air,
@@ -35,8 +37,6 @@ class SessionIcons {
     Icons.carpenter,
     Icons.coffee,
     Icons.extension,
-    Icons.support,
-    Icons.psychology,
     Icons.emoji_events,
     Icons.workspace_premium,
     Icons.sports_esports,

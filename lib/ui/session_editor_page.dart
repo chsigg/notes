@@ -128,7 +128,7 @@ class _SessionEditorPageState extends State<SessionEditorPage> {
     ];
 
     return AlertDialog(
-      title: const Text('Select Icon'),
+      title: const SizedBox(height: 16),
       content: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 400),
         child: Wrap(children: iconWidgets),
