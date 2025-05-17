@@ -165,9 +165,10 @@ class _PracticeNotesPageState extends State<PracticeNotesPage> {
                       ),
                       child: Text(
                         Localizations.of(context, NoteLocalizations).name(note),
-                        style: const TextStyle(fontSize: 48),
-                        textHeightBehavior: TextHeightBehavior(
-                          applyHeightToLastDescent: false,
+                        style: const TextStyle(
+                          fontSize: 48,
+                          height: 1.0,
+                          leadingDistribution: TextLeadingDistribution.even,
                         ),
                       ),
                     ),
