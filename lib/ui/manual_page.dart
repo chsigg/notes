@@ -24,7 +24,7 @@ class ManualPage extends StatelessWidget {
         title: const Text('Manual'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.info_outline),
+            icon: const Icon(Icons.copyright),
             tooltip: 'Show Licenses',
             onPressed: () => showLicensePage(context: context),
           ),
@@ -92,10 +92,10 @@ class ManualPage extends StatelessWidget {
                   _regular('Press the '),
                   WidgetSpan(child: Icon(Icons.ios_share)),
                   _regular(
-                    ' button at the bottom, select "Add to Home Screen ',
+                    ' button at the bottom, scroll down in the pop-up menu to select "Add to Home Screen" ',
                   ),
                   WidgetSpan(child: Icon(Icons.add_box_outlined)),
-                  _regular('" from the menu and press "Add".\n'),
+                  _regular('and press "Add".\n'),
                 ],
                 _bold('\nPrivacy Policy\n\n', fontSize: titleSize),
                 _regular(

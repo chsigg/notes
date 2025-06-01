@@ -152,6 +152,7 @@ class HomePage extends StatelessWidget {
     const double iconSize = 100;
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: 72,
         leading: IconButton(
           icon: const Icon(Icons.help_outline),
           tooltip: 'Show Manual',
@@ -186,7 +187,6 @@ class HomePage extends StatelessWidget {
           ),
         ),
         actions: [
-          Text('♯♭', style: TextStyle(fontSize: 0)),
           IconButton(
             icon: Icon(isEditMode ? Icons.check : Icons.settings),
             tooltip: isEditMode ? 'Done Editing' : 'Manage Sessions',

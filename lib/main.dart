@@ -14,6 +14,10 @@ import 'utils/note_mapping.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  final fontLoader = FontLoader('StaffClefPitches');
+  fontLoader.addFont(rootBundle.load('assets/fonts/staff_clef_pitches.ttf'));
+  await fontLoader.load();
+
   final settings = await SettingsProvider.load();
   final sessions = await SessionsProvider.load();
 
