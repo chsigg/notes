@@ -29,6 +29,7 @@ class PracticePlayPage extends StatefulWidget {
 class _PracticePlayPageState extends State<PracticePlayPage> {
   Timer _answerTimer = Timer(Duration.zero, () {});
 
+  int _questionsCounter = 0;
   late TimerWidget _timerWidget;
   late Note _questionNote;
   double? _aPitch;
@@ -160,6 +161,10 @@ class _PracticePlayPageState extends State<PracticePlayPage> {
   }
 
   void _goToNextQuestion() {
+    if (widget.config.numQuestionsPerRound > 0 &&
+        _questionsCounter++ == widget.config.numQuestionsPerRound) {
+      return Navigator.pop(context);
+    }
     if (_notesQueue.isEmpty) {
       return _addQuestions();
     }

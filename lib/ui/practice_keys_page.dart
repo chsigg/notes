@@ -23,6 +23,7 @@ class PracticeKeysPage extends StatefulWidget {
 class _PracticeKeysPageState extends State<PracticeKeysPage> {
   Timer? _nextQuestionTimer;
 
+  int _questionsCounter = 0;
   late TimerWidget _timerWidget;
   late Note _questionNote;
   late List<NoteKey> _answerKeys;
@@ -52,6 +53,10 @@ class _PracticeKeysPageState extends State<PracticeKeysPage> {
   }
 
   void _goToNextQuestion() {
+    if (widget.config.numQuestionsPerRound > 0 &&
+        _questionsCounter++ == widget.config.numQuestionsPerRound) {
+      return Navigator.pop(context);
+    }
     if (_noteQueue.isEmpty) {
       return _addQuestions();
     }

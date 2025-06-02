@@ -23,6 +23,7 @@ class SessionConfig {
   List<Note> notes;
   final int numChoices = 3;
   int timeLimitSeconds;
+  int numQuestionsPerRound;
 
   int practicedTests;
   int successfulTests;
@@ -36,6 +37,7 @@ class SessionConfig {
     required this.keys,
     required this.notes,
     this.timeLimitSeconds = 0,
+    this.numQuestionsPerRound = 0,
     this.practicedTests = 0,
     this.successfulTests = 0,
     this.totalPracticeTime = Duration.zero,
@@ -50,6 +52,7 @@ class SessionConfig {
       keys: [...(json['keys'] as List).map((key) => NoteKey.fromString(key))],
       notes: [...(json['notes'] as List).map((note) => Note.fromString(note))],
       timeLimitSeconds: json['timeLimitSeconds'] as int,
+      numQuestionsPerRound: json['numQuestionsPerRound'] as int? ?? 0,
       practicedTests: json['practicedTests'] as int,
       successfulTests: json['successfulTests'] as int,
       totalPracticeTime: Duration(seconds: json['totalPracticeTime'] ?? 0),
@@ -65,6 +68,7 @@ class SessionConfig {
       'keys': [...keys.map((key) => key.toString())],
       'notes': [...notes.map((key) => key.toString())],
       'timeLimitSeconds': timeLimitSeconds,
+      'numQuestionsPerRound': numQuestionsPerRound,
       'practicedTests': practicedTests,
       'successfulTests': successfulTests,
       'totalPracticeTime': totalPracticeTime.inSeconds,

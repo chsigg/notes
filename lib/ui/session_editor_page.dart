@@ -32,6 +32,7 @@ class _SessionEditorPageState extends State<SessionEditorPage> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _timeLimitController = TextEditingController();
+  final _numQuestionsController = TextEditingController();
 
   late IconData _selectedIconData;
   late SessionType _selectedType;
@@ -45,6 +46,9 @@ class _SessionEditorPageState extends State<SessionEditorPage> {
     _titleController.text = widget.config.title;
     final timeLimit = widget.config.timeLimitSeconds;
     _timeLimitController.text = timeLimit <= 0 ? '' : timeLimit.toString();
+    final numQuestions = widget.config.numQuestionsPerRound;
+    _numQuestionsController.text =
+        numQuestions <= 0 ? '' : numQuestions.toString();
     _selectedType = widget.config.type;
     _selectedIconData = widget.config.icon;
     _selectedKeys = Set.from(widget.config.keys);
@@ -55,6 +59,7 @@ class _SessionEditorPageState extends State<SessionEditorPage> {
   void dispose() {
     _titleController.dispose();
     _timeLimitController.dispose();
+    _numQuestionsController.dispose();
     super.dispose();
   }
 
@@ -70,6 +75,7 @@ class _SessionEditorPageState extends State<SessionEditorPage> {
       keys: [..._selectedKeys],
       notes: [..._selectedNotes],
       timeLimitSeconds: int.tryParse(_timeLimitController.text) ?? 0,
+      numQuestionsPerRound: int.tryParse(_numQuestionsController.text) ?? 0,
     );
   }
 
@@ -259,6 +265,17 @@ class _SessionEditorPageState extends State<SessionEditorPage> {
     );
   }
 
+  static String? _validatePositiveNumber(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return null;
+    }
+    final timeLimit = int.tryParse(value);
+    if (timeLimit == null || timeLimit < 0) {
+      return 'Please enter a positive number';
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -315,20 +332,23 @@ class _SessionEditorPageState extends State<SessionEditorPage> {
                   const SizedBox(height: 32),
 
                   ListTile(
-                    title: Text('Type:'),
+                    title: Text('Practice Type:'),
                     trailing: SegmentedButton<SessionType>(
                       segments: [
                         ButtonSegment<SessionType>(
                           value: SessionType.notes,
                           label: Text('C'),
+                          tooltip: 'Pick the correct name',
                         ),
                         ButtonSegment<SessionType>(
                           value: SessionType.keys,
                           label: Icon(Icons.music_note),
+                          tooltip: 'Pick the correct note',
                         ),
                         ButtonSegment<SessionType>(
                           value: SessionType.play,
                           label: Icon(Icons.mic),
+                          tooltip: 'Play the correct pitch',
                         ),
                       ],
                       selected: {_selectedType},
@@ -337,7 +357,7 @@ class _SessionEditorPageState extends State<SessionEditorPage> {
                       },
                     ),
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 16),
 
                   ListTile(
                     title: Text('Time Limit:'),
@@ -351,20 +371,28 @@ class _SessionEditorPageState extends State<SessionEditorPage> {
                           hintText: 'Set Time Limit',
                           suffixText: 'sec',
                         ),
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return null;
-                          }
-                          final timeLimit = int.tryParse(value);
-                          if (timeLimit == null || timeLimit < 0) {
-                            return 'Please enter a valid time limit';
-                          }
-                          return null;
-                        },
+                        validator: _validatePositiveNumber,
                       ),
                     ),
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 16),
+
+                  ListTile(
+                    title: Text('Round Length:'),
+                    trailing: IntrinsicWidth(
+                      child: TextFormField(
+                        controller: _numQuestionsController,
+                        textAlign: TextAlign.end,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                          hintText: 'Tests Per Round',
+                        ),
+                        validator: _validatePositiveNumber,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
 
                   _buildNonEmptyValidator(_selectedNotes),
                   const SizedBox(height: 16),
