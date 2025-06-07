@@ -73,9 +73,7 @@ class _TimerWidgetState extends State<TimerWidget> {
     return Row(
       children: [
         Text(_remainingSeconds.toString(), style: TextStyle(fontSize: 20.0)),
-        SizedBox(width: 8),
         Icon(Icons.timer_outlined, color: color),
-        SizedBox(width: 8),
       ],
     );
   }
@@ -94,11 +92,34 @@ class _TimerWidgetState extends State<TimerWidget> {
   }
 }
 
-AppBar makeAppBar(SessionConfig config, TimerWidget timer) => AppBar(
-  title: Row(
-    mainAxisAlignment: MainAxisAlignment.center,
-    mainAxisSize: MainAxisSize.min,
-    children: [Icon(config.icon), SizedBox(width: 16), Text(config.title)],
-  ),
-  actions: [timer],
-);
+AppBar makeAppBar(
+  BuildContext context,
+  SessionConfig config,
+  TimerWidget timer,
+  int questionCounter,
+) {
+  return AppBar(
+    title: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [Icon(config.icon), SizedBox(width: 16), Text(config.title)],
+    ),
+    actions: [
+      timer,
+      if (questionCounter > 0) ...[
+        SizedBox(width: 16),
+        SizedBox.square(
+          dimension: 24,
+          child: CircularProgressIndicator(
+            value: (questionCounter - 1) / config.numQuestionsPerRound,
+            backgroundColor:
+                Theme.of(context).colorScheme.surfaceContainerHighest,
+            valueColor: AlwaysStoppedAnimation<Color>(
+              getOnSurfaceColor(context),
+            ),
+          ),
+        ),
+      ],
+      SizedBox(width: 16),
+    ],
+  );
+}

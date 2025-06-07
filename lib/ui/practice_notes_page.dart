@@ -126,7 +126,12 @@ class _PracticeNotesPageState extends State<PracticeNotesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: makeAppBar(widget.config, _timerWidget),
+      appBar: makeAppBar(
+        context,
+        widget.config,
+        _timerWidget,
+        _questionsCounter,
+      ),
       body: Center(
         child: ListView(
           shrinkWrap: true,

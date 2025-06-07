@@ -17,4 +17,7 @@ Color getWrongColor(BuildContext context) {
 Color? getSecondaryContainerColor(BuildContext context) =>
     Theme.of(context).colorScheme.secondaryContainer;
 
+Color getOnSurfaceColor(BuildContext context) =>
+    Theme.of(context).colorScheme.onSurface;
+
 Color getErrorColor(context) => Theme.of(context).colorScheme.error;
