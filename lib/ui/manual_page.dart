@@ -71,7 +71,7 @@ class ManualPage extends StatelessWidget {
                   ),
                   _bold('Understanding the Session Editor\n\n'),
                   _regular(
-                    'You can choose the name and icon for your session, change the type and add a timer limit for each question.\n\nSelect the set of note names and notes on the staff that will be displayed during practice.\nTap individual notes to select or deselect them. Tap the clefs to select or deselect the entire row.\n\n',
+                    'The session editor allows you to personalize each practice session. You can assign a custom name and icon, choose the type of exercise, set a time limit for answering each question, or define the total number of questions to be included in a single round.\n\nSelect the set of note names and notes on the staff that will be displayed during practice.\nTap individual notes to select or deselect them. Tap the clefs to select or deselect the entire row.\n\n',
                   ),
                   _bold('Sharing Sessions (via a link)\n\n'),
                   _regular(

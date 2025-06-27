@@ -162,7 +162,7 @@ class _PracticePlayPageState extends State<PracticePlayPage> {
 
   void _goToNextQuestion() {
     if (widget.config.numQuestionsPerRound > 0 &&
-        _questionsCounter++ == widget.config.numQuestionsPerRound) {
+        _questionsCounter == widget.config.numQuestionsPerRound) {
       return Navigator.pop(context);
     }
     if (_notesQueue.isEmpty) {
@@ -238,7 +238,10 @@ class _PracticePlayPageState extends State<PracticePlayPage> {
         size: 32,
       );
     }();
-    setState(() => _statusWidget = statusWidget);
+    setState(() {
+      _statusWidget = statusWidget;
+      if (isCorrect) ++_questionsCounter;
+    });
     _answerTimer = Timer(Duration(seconds: 1), () {
       if (isCorrect) _goToNextQuestion();
     });

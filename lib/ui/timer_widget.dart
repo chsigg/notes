@@ -105,12 +105,12 @@ AppBar makeAppBar(
     ),
     actions: [
       timer,
-      if (questionCounter > 0) ...[
+      if (config.numQuestionsPerRound > 0) ...[
         SizedBox(width: 16),
         SizedBox.square(
           dimension: 24,
           child: CircularProgressIndicator(
-            value: (questionCounter - 1) / config.numQuestionsPerRound,
+            value: questionCounter / config.numQuestionsPerRound,
             backgroundColor:
                 Theme.of(context).colorScheme.surfaceContainerHighest,
             valueColor: AlwaysStoppedAnimation<Color>(

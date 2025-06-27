@@ -54,7 +54,7 @@ class _PracticeKeysPageState extends State<PracticeKeysPage> {
 
   void _goToNextQuestion() {
     if (widget.config.numQuestionsPerRound > 0 &&
-        _questionsCounter++ == widget.config.numQuestionsPerRound) {
+        _questionsCounter == widget.config.numQuestionsPerRound) {
       return Navigator.pop(context);
     }
     if (_noteQueue.isEmpty) {
@@ -117,7 +117,10 @@ class _PracticeKeysPageState extends State<PracticeKeysPage> {
       listen: false,
     ).incrementSessionStats(widget.config.id, isCorrect, _timer.takeSeconds());
     if (isCorrect) {
-      setState(() => _correctKey = tappedKey);
+      setState(() {
+        _correctKey = tappedKey;
+        ++_questionsCounter;
+      });
       _nextQuestionTimer = Timer(
         const Duration(milliseconds: 500),
         () => _goToNextQuestion(),
